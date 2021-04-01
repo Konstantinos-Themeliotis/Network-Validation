@@ -26,6 +26,8 @@ import network_adapter as na
 
 
 G = nx.Graph()
+G2 = Network(height = '100%', width = '100%')
+
 
 #Acceptable node attributes and acceptable node attribute values
 node_acceptable_attr = {
@@ -52,7 +54,7 @@ def parse_tgf_file() :
     nodes = []
     edges = []
 
-    with open("graph3.tgf") as f :
+    with open("graph5.tgf") as f :
         while True :    
             #Reading the file line-line
             line = f.readline()
@@ -75,7 +77,6 @@ def parse_tgf_file() :
                 for key in list(node_attr) :
                     if key in node_acceptable_attr : 
                         if node_attr[key] in node_acceptable_attr[key] : 
-                            node_attr['network_adapters'] = []
                             node_tuple = (node, node_attr)
                             nodes.append(node_tuple)
                         else : 
@@ -97,8 +98,14 @@ def parse_tgf_file() :
     #Creating Graph
     G.add_nodes_from(nodes)
     G.add_edges_from(edges)
+   
+    #Creating pyvis graph from networkx object
+    G2.from_nx(G)
 
-    #Creating network adapter object for every different network adapter
+    for node in G.nodes : 
+        G.nodes[node]["network_adapters"] = []
+
+    #Creating network Adapter object for every different network adapter
     for edge in edges : 
         network_adapter = na.Adapter(edge[2]['left_end']["MAC"])
         found = False 
@@ -114,7 +121,7 @@ def parse_tgf_file() :
                   G.nodes[edge[0]]['network_adapters'].append(network_adapter)
 
     for edge in edges : 
-        network_adapter = na.Adapter(edge[2]['left_end']["MAC"])
+        network_adapter = na.Adapter(edge[2]['right_end']["MAC"])
         found = False 
         
         if not G.nodes[edge[1]]['network_adapters'] : 
@@ -129,15 +136,10 @@ def parse_tgf_file() :
 
 
     
-    
  
 
 #Graph visualization   
 def draw_graph() : 
-    
-    #Creating pyvis graph from networkx object
-    G2 = Network(height = '100%', width = '100%')
-    G2.from_nx(G)
     
     #Adding node attributes for visualization
     for node in G2.nodes :
@@ -150,7 +152,6 @@ def draw_graph() :
             node["size"] = 25
          
     #Adding edge attributes for visualization    
-    
     for edge in G2.edges : 
         edge["title"] = "Attributes : " + '<br>' + '<br>'
         
@@ -174,7 +175,7 @@ def draw_graph() :
         edge['title'] += 'DNS : ' + str(edge['right_end']['DNS'])  
         
         edge["label"] = "Unknown"
-        
+       
 
     #Some initial options and display
     #G2.show_buttons()
@@ -195,49 +196,48 @@ def find_subnet() :
     S = [G3.subgraph(c) for c in nx.connected_components(G3)]
     return S
 
+
+#Help function that prints every node network adapters
+def print_mac() : 
+    for node in G.nodes :  
+        print("Node:", node," Newtork Adapters: ", [G.nodes[node]["network_adapters"][i].MAC  for i in range(len(G.nodes[node]["network_adapters"]))])
+
+
+
 #Checks if a network adapter is unique
 def check_unique_adress() :
     network_subnets = find_subnet()
-    #print(subnets[0].nodes['1']['network_adapters'][0].MAC)
-    
-    #print(list(network_subnets[0].nodes))
-    
+
     #for every subnet
-    for subnet in network_subnets :
+    for sub_index, subnet in enumerate(network_subnets) :        
         
         #for every node in subnet 
         for index, node in enumerate(subnet) :
+            node_help_list = list(subnet.nodes)
             
             #for every adapter in node
             for adapter in subnet.nodes[node]['network_adapters'] : 
                 
                 #Checks with every other node
-                for i, nod in enumerate(range(index + 1, len(list(subnet.nodes)))) : 
+                for node_2 in range(index+1, len(node_help_list)) : 
                     
-                    #Check with every node adapter
-                    for j, item in subnet.nodes[nod]['network_adapters'] : 
-                        
-                        if item == subnet.nodes[node]['network_adapters'][j] : 
-                            print("Anteee")
-                     
-
-
-
-
-    
-
-    
-    
+                    #Check with every adapter on the other node
+                    for adapter_2 in subnet.nodes[node_help_list[node_2]]['network_adapters'] : 
+                        if adapter == adapter_2 : 
+                            print("Node:", node, "has the same MAC adress at node:",node_help_list[node_2], "at subnet: ",sub_index+1 )
             
+            del node_help_list[0]
+
+
+    
+
+    
     
 #Main    
 if __name__ == "__main__" : 
     parse_tgf_file()
-    check_unique_adress()
-    #draw_graph()
-    """
-    for node  in G.nodes : 
-        for i in range(len(G.nodes[node]["network_adapters"])) : 
-            print( G.nodes[node]["network_adapters"][i].MAC)
-    """
+    print_mac()
+    #check_unique_adress()
+    draw_graph()
+ 
 
