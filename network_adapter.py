@@ -1,63 +1,71 @@
+'''
+    -Layer 1: 
+        -Hub -> No adapter object-No needed
+    
+    -Layer 2:
+        -Switch -> Adapter()
+    
+    -Layer 3:    
+            -Router ->RouterAdapter(Adapter2)
+
+    -Layer 7: 
+        -Client PC ->L7Adapter(L3Adapter): MAC, IP, Mask, Gateway, DNS
+        
+        -Server PC: ->L7Adapter(L3Adapter): MAC, IP, Mask, Gateway, DNS 
+'''
+
+
 class Adapter() : 
     
     #Constructor
-    def __init__(self, MAC,Gateway) :
+    def __init__(self, MAC) :
         self.MAC = MAC
-        self.Gateway = Gateway
         
     #Adapter Object Equalizer - called when self == other 
     def __eq__(self, other): 
         if not isinstance(other, Adapter):
-            #Do not attempt to compare against unrelated types
+            
+            #Do not attempt to compare against unrelated object types
             return NotImplemented
         
-        #compare the rest of the attributes if needed - TODO 
         return self.MAC == other.MAC
     
     #Prints the Adapters attributes
     def __str__(self):
-        return f"MAC adress:  {self.MAC} \n Gateway: {self.Gateway} \n -----------------"
+        return f"MAC address:  {self.MAC} \n -----------------"
 
-class L3SwitchAdapter(Adapter):
-    
-    def __init__(self, MAC, IP, Mask, Gateway):
-        super().__init__(MAC,Gateway)
-        self.IP = IP
-        self.Mask = Mask
 
-    def __str__(self):
-        return f"MAC adress:  {self.MAC} \n IP adress: {self.IP} \n Subnet Mask: {self.Mask} \n Gateway: {self.Gateway} \n-----------------"
 
-class L3RouterAdapter(L3SwitchAdapter):
-    
-    def __init__(self, MAC, IP, Mask, Gateway, NAT):
-        super().__init__(MAC, IP, Mask, Gateway)
-        self.NAT = NAT
-
-    def __str__(self):
-        return f"MAC adress:  {self.MAC} \n IP adress: {self.IP} \n Subnet Mask: {self.Mask} \n Gateway: {self.Gateway} \n NAT: {self.NAT} \n-----------------"
-
-class L7Adapter(L3SwitchAdapter):
+class PCAdapter(Adapter):
     
     def __init__(self, MAC, IP, Mask, Gateway, DNS):
-        super().__init__(MAC, IP, Mask, Gateway)
+        super().__init__(MAC)
+        self.IP = IP
+        self.Mask = Mask
+        self.Gateway = Gateway
         self.DNS = DNS
+
+    def __str__(self):
+        return f"MAC address:  {self.MAC} \n IP address: {self.IP} \n Subnet Mask: {self.Mask} \n Gateway: {self.Gateway} \n DNS: {self.DNS} \n \n-----------------"
+
+
+class RouterAdapter(Adapter):
+    
+    def __init__(self, MAC, IP, Mask, Gateway, DNS, NAT,private_IP):
+        super().__init__(MAC)
+        self.IP = IP
+        self.Mask = Mask
+        self.Gateway = Gateway
+        self.DNS = DNS
+        self.NAT = NAT    
+        if NAT == 'enabled':
+            self.public_IP = IP
+            self.private_IP = private_IP
+
+
     
     def __str__(self):
-        return f"MAC adress:  {self.MAC} \n IP adress: {self.IP} \n Subnet Mask: {self.Mask} \n Gateway: {self.Gateway} \n DNS: {self.DNS} \n-----------------"
+        return f"MAC address:  {self.MAC} \n IP address: {self.IP} \n Subnet Mask: {self.Mask} \n Gateway: {self.Gateway} \n DNS: {self.DNS} \n NAT: {self.NAT} \n-----------------"
 
 
 
-'''
-    -Layer 1:
-        -Hub
-    -Layer 2:
-        -L2 Switch
-    -Layer 3:
-        -L3 Switch
-    -Layer 3-Nat
-        -Router
-    -Layer 7: 
-        Client PC
-        Server PC
-'''
