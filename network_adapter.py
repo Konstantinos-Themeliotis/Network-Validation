@@ -13,59 +13,60 @@
         
         -Server PC: ->L7Adapter(L3Adapter): MAC, IP, Mask, Gateway, DNS 
 '''
+from netaddr import *
 
 
 class Adapter() : 
-    
     #Constructor
     def __init__(self, MAC) :
-        self.MAC = MAC
+        self.MAC = EUI(MAC)
         
-    #Adapter Object Equalizer - called when self == other 
+    #Adapter Object Equalizer 
     def __eq__(self, other): 
         if not isinstance(other, Adapter):
-            
-            #Do not attempt to compare against unrelated object types
             return NotImplemented
         
         return self.MAC == other.MAC
     
-    #Prints the Adapters attributes
     def __str__(self):
-        return f"MAC address:  {self.MAC} \n -----------------"
-
+        return f"MAC address. . . . . . . . . . : {str(self.MAC)}\n"
 
 
 class PCAdapter(Adapter):
-    
     def __init__(self, MAC, IP, Mask, Gateway, DNS):
         super().__init__(MAC)
-        self.IP = IP
-        self.Mask = Mask
-        self.Gateway = Gateway
-        self.DNS = DNS
-
+        self.IP = IPAddress(IP)
+        self.Mask = IPAddress(Mask)
+        self.Gateway = IPAddress(Gateway)
+        self.DNS = IPAddress(DNS)
+    
     def __str__(self):
-        return f"MAC address:  {self.MAC} \n IP address: {self.IP} \n Subnet Mask: {self.Mask} \n Gateway: {self.Gateway} \n DNS: {self.DNS} \n \n-----------------"
+        output = f"MAC address . . . . . . . . . . . : {str(self.MAC)}\n"
+        output += f"IP address . . . . . . . . . . . : {str(self.IP)}\n"
+        output += f"Subnet Mask . . . . . . . . . . . : {str(self.Mask)}\n"
+        output += f"Gateway . . . . . . . . . . . . . : {str(self.Gateway)}\n"
+        output += f"DNS . . . . . . . . . . . . . . . : {str(self.DNS)}\n"
+        return output
 
 
 class RouterAdapter(Adapter):
-    
-    def __init__(self, MAC, IP, Mask, Gateway, DNS, NAT,private_IP):
+    def __init__(self, MAC, IP, Mask, Gateway, DNS, NAT, private_IP):
         super().__init__(MAC)
-        self.IP = IP
-        self.Mask = Mask
-        self.Gateway = Gateway
-        self.DNS = DNS
+        self.IP = IPAddress(IP)
+        self.Mask = IPAddress(Mask)
+        self.Gateway = IPAddress(Gateway)
+        self.DNS = IPAddress(DNS)
         self.NAT = NAT    
+        
         if NAT == 'enabled':
-            self.public_IP = IP
-            self.private_IP = private_IP
+            self.public_IP = IPAddress(IP)
+            self.private_IP = IPAddress(private_IP)
 
-
-    
-    def __str__(self):
-        return f"MAC address:  {self.MAC} \n IP address: {self.IP} \n Subnet Mask: {self.Mask} \n Gateway: {self.Gateway} \n DNS: {self.DNS} \n NAT: {self.NAT} \n-----------------"
-
-
-
+    def __str__(self) -> str:
+        output = f"MAC address . . . . . . . . . . . : {str(self.MAC)}\n"
+        output += f"IP address. . . . . . . . . . . . : {str(self.IP)}\n"
+        output += f"Subnet Mask . . . . . . . . . . . : {str(self.Mask)}\n"
+        output += f"Gateway . . . . . . . . . . . . . : {str(self.Gateway)}\n"
+        output += f"DNS . . . . . . . . . . . . . . . : {str(self.DNS)}\n"
+        output += f"NAT . . . . . . . . . . . . . . . : {str(self.NAT)}\n"
+        return output        
