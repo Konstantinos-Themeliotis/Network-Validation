@@ -1,1 +1,1 @@
-#Visualization theme's icons
+Diffrent icons used for visualizations themes.
