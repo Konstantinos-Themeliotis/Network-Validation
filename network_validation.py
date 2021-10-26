@@ -2,64 +2,52 @@
 Network Validation ~Under construction!
     
     -Things TODO now:
-        -Routing table
-        -Check routing table length
+        -Check if routers public ip is unique
+        -Parse yaml format and export it to tgf format
 
-    -Things TODO later:
-        -Export to yaml format
-    
     -Vizual:
-        -Create aesthetic profiles maybe with config files
-        -Terminal output decorator 
+        -Terminal output decorator
 
     -Refactoring:
-        -Create an error handling function or class
-        -Maybe create an object builder
-        -Maybe create some classes and take advantage of software patterns
+        -Improve type and value validation of the tgf file.
     
-    -Small details TODO:
-        -Check if an adapter in a node with same MAC has different IP
+    -Small details TODO
+        -Check at value validation if is written correctly in the file
+            -Eg if link_ID is writter as string in te file or not
 
 """
 
 #Imports
 import networkx as nx
-from pyvis.network import Network
 import ast
 import network_adapter as na
-from netaddr import IPNetwork, IPAddress
+from netaddr import *
 import os.path
 import re
 import pandas as pd
+import yaml
+import network_renderer as rd
+import network_interface as nif
 
 
 
 # Global variables
-# FIXME use only ACCEPTABLE NODE TYPES and rename
-NET_VIS_GRAPH = Network(height = '100%', width = '100%', bgcolor = "#222222", font_color = "white")
-NETWORK_GRAPH = nx.DiGraph()
-PUBLIC_IP_TABLE = pd.DataFrame  #Dataframe with every IP address in the network
-ACCEPTABLE_LINK_ATTR = set(('link_ID', 'left_end', 'right_end', 'capacity', 'latency'))
-ACCEPTABLE_NODE_ATTR = set(('node_type', 'routing_table'))
-ACCEPTABLE_ADAPTER_ATTR = {
-    'Client_PC' : set(['MAC', 'IP', 'Mask', 'Gateway', 'DNS']),
-    'Server_PC' : set(['MAC', 'IP', 'Mask', 'Gateway', 'DNS']),
-    'Router' : set(['MAC', 'IP', 'Mask', 'Gateway', 'DNS', 'NAT', 'private_IP']),
-    'Switch' : set(['MAC']),
-    'Hub' : set(['msg'])}
-ACCEPTABLE_NODE_TYPES = {
-    'node_type' : ['Client_PC', 'Server_PC', 'Router', 'Switch', 'Hub'],
-    'routing_table' : set(['dest', 'mask', 'link', 'next_hop'])
-    }
+NETWORK_GRAPH = nx.DiGraph()    #network topology graph
+HELP_NET_GRAPH = nx.DiGraph()   #help graph used for visualization
 
-# TODO Config files for aesthetic profiles
-ICONS_MAP = {
-        'Client_PC' : 'https://raw.githubusercontent.com/dperpel/Network-Validation/main/icons/PC.png' , 
-        'Server_PC' : 'https://raw.githubusercontent.com/dperpel/Network-Validation/main/icons/data-server.png' , 
-        'Router' : 'https://raw.githubusercontent.com/dperpel/Network-Validation/main/icons/MyRouter.png' ,
-        'Switch' : 'https://raw.githubusercontent.com/dperpel/Network-Validation/main/icons/Switch%20L2.png' , 
-        'Hub' : 'https://raw.githubusercontent.com/dperpel/Network-Validation/main/icons/myHub2.png'
-        }
+#TODO Maybe add the to config file. Acceptable attribute and attribute values
+ACCEPTABLE_NODE_ATTR = {
+    'node_type' : {'Client_PC', 'Server_PC', 'Router', 'Switch', 'Hub'},
+    'routing_table' : {'dest', 'mask', 'link', 'next_hop'}
+    }
+ACCEPTABLE_LINK_ATTR = {'link_ID', 'left_end', 'right_end', 'capacity', 'latency'}
+ACCEPTABLE_ADAPTER_ATTR = {
+    'Client_PC' : {'if_id', 'mac', 'ip', 'mask', 'gateway', 'dns'},
+    'Server_PC' : {'if_id', 'mac', 'ip', 'mask', 'gateway', 'dns'},
+    'Router' : {'if_id', 'mac', 'ip', 'mask', 'gateway', 'dns', 'nat', 'private_ip'},
+    'Switch' : {'if_id', 'mac'},
+    'Hub' : {'if_id'}
+    }
 
 
 def parse_tgf_file(filename: str) -> None:
@@ -82,9 +70,6 @@ def parse_tgf_file(filename: str) -> None:
             
             # Blank Line
             if line.isspace():
-                continue
-            
-            if "#Nodes" in line:
                 continue
 
             # Nodes from  edges seperator in file
@@ -113,62 +98,87 @@ def parse_tgf_file(filename: str) -> None:
             
             # Parsing nodes from file      
             if not nodes_parsing_completed: 
-                node  = line.split("~")[0].strip() 
+                node_id = line.split("~")[0].strip()  
                 node_attr = ast.literal_eval(line.split("~")[1].strip())
                 
-                validate_node_attributes(node,node_attr)
+                validate_node_attributes(node_id, node_attr)
                
-                node_tuple = (node, node_attr)
+                node_tuple = (node_id, node_attr)
                 nodes.append(node_tuple)
                        
             # Parsing edges from file
             else:
-                left_end_node = line.split("~")[0].split(" ")[0].strip()
-                right_end_node = line.split("~")[0].split(" ")[1].strip()
-                link_attr = ast.literal_eval(line.split("~")[1].strip())
+                left_end_node_id = line.split("~")[0].split(" ")[0].strip()
+                right_end_node_id = line.split("~")[0].split(" ")[1].strip()
+                edge_attr = ast.literal_eval(line.split("~")[1].strip())
                 
-                validate_edge_attributes(nodes, left_end_node, right_end_node, link_attr)
+                validate_edge_attributes(nodes, left_end_node_id, right_end_node_id, edge_attr)
                 
-                edge_tuple = (left_end_node, right_end_node, link_attr)
+                edge_tuple = (left_end_node_id, right_end_node_id, edge_attr)
                 edges.append(edge_tuple)                         
     
-    # Creating Graph
+    #Initialize Graphs
+    init_graphs(nodes, edges)
+
+
+def init_graphs(nodes: list, edges: list):
+    """ Initializes graphs after parsing is completed 
+    Note: It would be better to create routing table Dataframes while parsing
+    and add them directly as attributes to graph. But pyvis can not handle them.
+    So the NETWORK_GRAPH is first created simply, and then adds the objects as attributes
+    
+    """
+    
+    # Creating Networkx Graph
     NETWORK_GRAPH.add_nodes_from(nodes)
     NETWORK_GRAPH.add_edges_from(edges)
+    HELP_NET_GRAPH.add_nodes_from(nodes)
+    HELP_NET_GRAPH.add_edges_from(edges)
 
-   
-    # Creating pyvis graph for visualization from networkx object
-    NET_VIS_GRAPH.from_nx(NETWORK_GRAPH)
+    for node in NETWORK_GRAPH.nodes:
+        NETWORK_GRAPH.nodes[node]["network_interfaces"] = []    
+
+    # Create interfaces from edge attributes
+    create_interfaces()
+
+    # #Creating routing table dataframes
+    for node in NETWORK_GRAPH:
+        if NETWORK_GRAPH.nodes[node]['node_type'] == 'Router':
+            routing_table = pd.DataFrame(NETWORK_GRAPH.nodes[node]['routing_table'])
+            NETWORK_GRAPH.nodes[node]['routing_table'] = routing_table    
+    
+    #Create networks subnet table
+    create_router_addresses_table()
 
 
-def validate_node_attributes(node: str, node_attr: dict) -> None:
-    validate_node_attr_type(node, node_attr)
+def validate_node_attributes(node_id: str, node_attr: dict) -> None:
+    validate_node_attr_type(node_id, node_attr)
     #validate_routing_table_attr_value(node, node_attr)  Called from somewhere else
 
 
-def validate_node_attr_type(node: str, node_attr: dict) -> None: 
+def validate_node_attr_type(node_id: str, node_attr: dict) -> None: 
     """ Validates if the node has the right attributes"""
     
-    invalid_node_attr = set(node_attr) - ACCEPTABLE_NODE_ATTR
+    invalid_node_attr = set(node_attr) - set(ACCEPTABLE_NODE_ATTR)
     
     if invalid_node_attr:
         print("\n  -Node Attribute Type Error: ")
-        print(f"  Attributes {invalide_node_attr} are invalid ({node})\n")
+        print(f"  Attributes {invalid_node_attr} are invalid ({node_id})\n")
         exit()
 
     if 'node_type' not in node_attr:
         print("\n  -Node Attribute Type Error: ")
-        print(f"  Attribute node_type is missing from node {node}\n")
+        print(f"  Attribute node_type is missing from node {node_id}\n")
     
-    elif node_attr['node_type'] in ACCEPTABLE_NODE_TYPES['node_type']:
+    elif node_attr['node_type'] in ACCEPTABLE_NODE_ATTR['node_type']:
         if node_attr['node_type'] == "Router":
             if 'routing_table' not in node_attr:
                 print("\n  -Node Attribute Type Error: ")
-                print(f"  Attribute routing_table is missing from node ({node})\n")
+                print(f"  Attribute routing_table is missing from node ({node_id})\n")
                 exit()
             else:
-                validate_routing_table_attr_type(node, node_attr)
-                validate_routing_table_attr_value(node, node_attr)
+                validate_routing_table_attr_type(node_id, node_attr)
+                validate_routing_table_attr_value(node_id, node_attr)
 
     else:
         print("Invalid type\n")
@@ -177,10 +187,10 @@ def validate_node_attr_type(node: str, node_attr: dict) -> None:
 
 # TODO: comments
 def validate_routing_table_attr_type(node: str, node_attr: dict) -> None:
-    # Validates if the routing table has the right attribues
+    """ Validates if the routing table has the right attribues """
     
-    missing_table_attr = ACCEPTABLE_NODE_TYPES['routing_table'] - set(node_attr['routing_table'])
-    invalid_table_attr = set(node_attr['routing_table']) - ACCEPTABLE_NODE_TYPES['routing_table']
+    missing_table_attr = ACCEPTABLE_NODE_ATTR['routing_table'] - set(node_attr['routing_table'])
+    invalid_table_attr = set(node_attr['routing_table']) - ACCEPTABLE_NODE_ATTR['routing_table']
     found_invalid_attr = False
 
     if missing_table_attr:
@@ -198,7 +208,7 @@ def validate_routing_table_attr_type(node: str, node_attr: dict) -> None:
 
 
 # FIXME Write better output messages
-def validate_routing_table_attr_value(node: str, node_attr: dict) -> None:
+def validate_routing_table_attr_value(node_id: str, node_attr: dict) -> None:
     """ Validates if routing tables attribute values are correct"""
     
     dest_count =  len(node_attr['routing_table']['dest'])
@@ -208,16 +218,16 @@ def validate_routing_table_attr_value(node: str, node_attr: dict) -> None:
     
     # Routing table attributes must be of the same length
     if not(dest_count == mask_count == link_count == next_hop_count):
-        print(f"-Routing table at {node} is missing some values\n")
+        print(f"-Routing table at {node_id} is missing some values\n")
 
     # Destination
     for dest in node_attr['routing_table']['dest']:
         if not is_valid_ip(dest):
             print("  -Routing Table Value Error")
-            print(f'{node} has destination invalid value\n')
+            print(f'{node_id} has destination invalid value\n')
             exit()
 
-    # Mask TODO
+    # mask TODO
     for mask in node_attr['routing_table']['mask']:
         if not is_valid_mask(mask) or not is_valid_ip(mask):
             print("  -Routing Table Value Error")
@@ -227,52 +237,66 @@ def validate_routing_table_attr_value(node: str, node_attr: dict) -> None:
     for link in node_attr['routing_table']['link']:
         if link.isdecimal() and int(link) <= 0 or not link.isdecimal():
             print("\n  -Routing Table Value Error: ")
-            print(f"  Invalid link ID value at routing table at {node})\n")
+            print(f"  Invalid link ID value at routing table at {node_id})\n")
             exit()
     
     # Next Hop
     for hop in node_attr['routing_table']['next_hop']:
         if not is_valid_ip(hop):
             print("  -Routing Table Value Error")
-            print(f'  {node} has next hop invalid value\n')
+            print(f'  {node_id} has next hop invalid value\n')
             exit()
 
 
-def validate_edge_attributes(nodes: list, left_end_node: str, right_end_node: str, link_attr: dict) -> None:
+def validate_edge_attributes(nodes: list, left_end_node_id: str, right_end_node_id: str, edge_attr: dict) -> None:
     """ Validates the parsed attributes values"""
     
+    #Iterating through nodes list to find if left_end and right_end nodes 
+    # declared in the file and if true, what type of nodes they are.
+    left_end_node_declared = False
+    right_end_node_declared = False
     for node in nodes:
-        if node[0] == left_end_node: 
+        if node[0] == left_end_node_id: 
+            left_end_node_declared = True
             left_node_type = node[1]['node_type']
 
-        if node[0] == right_end_node:
+        if node[0] == right_end_node_id:
+            right_end_node_declared = True
             right_node_type = node[1]['node_type']
     
+    if not left_end_node_declared:
+        print(f"Node {left_end_node_id} , at edge {left_end_node_id} { right_end_node_id} is not declared at the tgf file")
+        exit()
+    
+    if not right_end_node_declared:
+        print(f"Node {right_end_node_id} , at edge {left_end_node_id} { right_end_node_id} is not declared at the tgf file")
+        exit()
+
     # Global link attributes type validation
-    validate_link_attributes_type(link_attr, left_end_node, right_end_node)
+    validate_edge_attributes_type(edge_attr, left_end_node_id, right_end_node_id)
 
     # Global link attributes value validation
-    validate_link_attributes_value(link_attr, left_end_node, right_end_node)
+    validate_edge_attributes_value(edge_attr, left_end_node_id, right_end_node_id)
     
     # Left-Right End node attributes type validation
-    validate_end_node_attributes_type(left_end_node, right_end_node, left_node_type,'left_end', link_attr)
-    validate_end_node_attributes_type(right_end_node, left_end_node, right_node_type,'right_end', link_attr)
+    validate_end_node_attributes_type(left_end_node_id, right_end_node_id, left_node_type,'left_end', edge_attr)
+    validate_end_node_attributes_type(right_end_node_id, left_end_node_id, right_node_type,'right_end', edge_attr)
 
     # Left-Right End node attributes value validation
-    validate_end_node_attributes_value(left_end_node, right_end_node, left_node_type, 'left_end', link_attr)
-    validate_end_node_attributes_value(right_end_node, left_end_node, right_node_type, 'right_end', link_attr)
+    validate_end_node_attributes_value(left_end_node_id, right_end_node_id, left_node_type, 'left_end', edge_attr)
+    validate_end_node_attributes_value(right_end_node_id, left_end_node_id, right_node_type, 'right_end', edge_attr)
 
 
-def validate_link_attributes_type(link_attr: dict, from_node: str, to_node: str) -> None:
+def validate_edge_attributes_type(edge_attr: dict, from_node: str, to_node: str) -> None:
     """ Validates if the link has the right attributes
       - A = ACCEPTABLE_LINK_ATTR -> Attributes set a link must have
-      - B = link_attr -> The parsed attribute set
+      - B = edge_attr -> The parsed attribute set
       - A-B = missing_attr_set -> The set of attributes that are missing from the link
       - B-A = invalid_attr_set -> The set of attributes that should not exist on the link
     """
 
-    missing_attr_set = ACCEPTABLE_LINK_ATTR - set(link_attr)    
-    invalid_attr_set = set(link_attr) - ACCEPTABLE_LINK_ATTR
+    missing_attr_set = ACCEPTABLE_LINK_ATTR - set(edge_attr)    
+    invalid_attr_set = set(edge_attr) - ACCEPTABLE_LINK_ATTR
     found_invalid_parsed_attr = False
 
     if missing_attr_set:
@@ -290,12 +314,12 @@ def validate_link_attributes_type(link_attr: dict, from_node: str, to_node: str)
 
 
 # FIXME Break the if statements into smaller functions
-def validate_link_attributes_value(link_attr: dict, from_node: str, to_node: str) -> None:
+def validate_edge_attributes_value(edge_attr: dict, from_node: str, to_node: str) -> None:
     """ Validates if links attributes have the right values"""
     
     # Link ID value validation
-    if link_attr['link_ID'].isdecimal():
-        if int(link_attr['link_ID']) <= 0:
+    if edge_attr['link_ID'].isdecimal():
+        if int(edge_attr['link_ID']) <= 0:
             print("\n  -Edge Attribute Value Error: ")
             print(f"  Invalid link ID value at edge ({from_node + ' ' + to_node})\n")
             exit(0)
@@ -305,8 +329,8 @@ def validate_link_attributes_value(link_attr: dict, from_node: str, to_node: str
         exit(0)
     
     # Capacity value validation
-    if link_attr['capacity'].isdecimal():
-        if int(link_attr['link_ID']) <= 0:
+    if edge_attr['capacity'].isdecimal():
+        if int(edge_attr['link_ID']) <= 0:
             print("\n  -Edge Attribute Value Error: ")
             print(f"  Invalid link ID value at edge ({from_node + ' ' + to_node})\n")
             exit(0)
@@ -316,8 +340,8 @@ def validate_link_attributes_value(link_attr: dict, from_node: str, to_node: str
         exit(0)
 
     # Latency value validation
-    if link_attr['latency'].isdecimal():
-        if int(link_attr['link_ID']) <= 0:
+    if edge_attr['latency'].isdecimal():
+        if int(edge_attr['link_ID']) <= 0:
             print("\n  -Edge Attribute Value Error: ")
             print(f"  Invalid link ID value at edge ({from_node + ' ' + to_node})\n")
             exit(0)
@@ -327,32 +351,32 @@ def validate_link_attributes_value(link_attr: dict, from_node: str, to_node: str
         exit(0)
 
 
-def validate_end_node_attributes_type(from_node: str, to_node: str, node_type: str, end_node: str, link_attr: dict) -> None:
-    """ Validates if the adapter has the right attributes"""
+def validate_end_node_attributes_type(from_node: str, to_node: str, node_type: str, end_node: str, edge_attr: dict) -> None:
+    """ Validates if the interface has the right attributes"""
     
     if end_node == 'right_end':
         from_node, to_node = to_node, from_node
 
-    # End node attr eg MAC,IP etc etc
-    valid_adapter_attr_set = ACCEPTABLE_ADAPTER_ATTR[node_type] - set(link_attr[end_node])
-    invalid_adapter_attr_set = set(link_attr[end_node]) - ACCEPTABLE_ADAPTER_ATTR[node_type]
+    # End node attr eg mac,ip etc etc
+    valid_adapter_attr_set = ACCEPTABLE_ADAPTER_ATTR[node_type] - set(edge_attr[end_node])
+    invalid_adapter_attr_set = set(edge_attr[end_node]) - ACCEPTABLE_ADAPTER_ATTR[node_type]
     found_invalid_adapter_attr = False
     
     if valid_adapter_attr_set:
         found_invalid_adapter_attr = True
         print("\n  -Edge Attribute Type Error: ")
-        print(f"  Attributes {valid_adapter_attr_set} are missing from : {from_node}, at edge ({from_node + ' ' + to_node}), with link ID: {link_attr['link_ID']}\n")
+        print(f"  Attributes {valid_adapter_attr_set} are missing from : {from_node}, at edge ({from_node + ' ' + to_node}), with link ID: {edge_attr['link_ID']}\n")
             
     if invalid_adapter_attr_set:
         found_invalid_adapter_attr = True
         print("\n  -Edge Attribute Type Error: ")
-        print(f"  Attributes {invalid_adapter_attr_set} should not exist at: {from_node} ,at edge  ({from_node + ' ' + to_node}), with link ID: {link_attr['link_ID']}\n")
+        print(f"  Attributes {invalid_adapter_attr_set} should not exist at: {from_node} ,at edge  ({from_node + ' ' + to_node}), with link ID: {edge_attr['link_ID']}\n")
     
     if found_invalid_adapter_attr:
         exit(0)
 
 
-def validate_end_node_attributes_value(from_node: str, to_node: str, node_type: str, end_node: str, link_attr: dict) -> None:
+def validate_end_node_attributes_value(from_node: str, to_node: str, node_type: str, end_node: str, edge_attr: dict) -> None:
     """ Validates if the adapters attributes have the right value """
     
     if end_node == 'right_end':
@@ -360,67 +384,91 @@ def validate_end_node_attributes_value(from_node: str, to_node: str, node_type: 
 
     # Attribute value validation
     if node_type == "Switch":
-
-        if not is_valid_mac(link_attr[end_node]['MAC']):
+         #Nodes mac is a valid mac address
+        if not is_valid_mac(edge_attr[end_node]['mac']):
             print("\n  -Edge Attribute Value Error: ")
-            print(f"  MAC addresss  at {from_node}, at edge ({from_node + ' ' + to_node})mac not an acceptable value\n")
+            print(f"  mac addresss  at {from_node}, at edge ({from_node + ' ' + to_node})mac not an acceptable value\n")
 
     elif node_type in {"Client_PC", "Server_PC", 'Router'}:
-
-        if not is_valid_mac(link_attr[end_node]['MAC']):
+        #Nodes mac is a valid mac address
+        if not is_valid_mac(edge_attr[end_node]['mac']):
             print("\n  -Edge Attribute Value Error: ")
-            print(f"  MAC addresss  at {from_node}, at edge ({from_node + ' ' + to_node})mac not an acceptable value\n")
+            print(f"  mac addresss  at {from_node}, at edge ({from_node + ' ' + to_node})mac not an acceptable value\n")
             exit(0)
-
-        if not is_valid_ip(link_attr[end_node]['IP']): 
+        #Nodes ip is a valid ip address
+        if not is_valid_ip(edge_attr[end_node]['ip']): 
             print("\n  -Edge Attribute Value Error: ")
-            print(f"IP addresss  at {from_node}, at edge ({from_node + ' ' + to_node}) is not an acceptable value\n")
+            print(f"ip addresss  at {from_node}, at edge ({from_node + ' ' + to_node}) is not an acceptable value\n")
             exit(0)
-
-        if not is_valid_mask(link_attr[end_node]['Mask'] or not is_valid_ip(link_attr[end_node]['Mask'])):
+        #mask is a valid ip address and network mask
+        if not is_valid_mask(edge_attr[end_node]['mask'] or not is_valid_ip(edge_attr[end_node]['mask'])):
             print("\n  -Edge Attribute Value Error: ")
-            print(f"Network Mask at {from_node}, at edge ({from_node + ' ' + to_node}) is not a valid Network Mask\n")
+            print(f"Network mask at {from_node}, at edge ({from_node + ' ' + to_node}) is not a valid Network mask\n")
             exit(0)
-
-        if not is_valid_ip(link_attr[end_node]['Gateway']):
+        #gateway is a valid ip address
+        if not is_valid_ip(edge_attr[end_node]['gateway']):
             print("\n  -Edge Attribute Value Error: ")
-            print(f"  Gateway's address at {from_node}, at edge ({from_node + ' ' + to_node}) is not an acceptable value\n")
+            print(f"  gateway's address at {from_node}, at edge ({from_node + ' ' + to_node}) is not an acceptable value\n")
             exit(0)
-
-        if not is_valid_ip(link_attr[end_node]['DNS']):
+        #dns is a valid ip address
+        if not is_valid_ip(edge_attr[end_node]['dns']):
             print("\n  -Edge Attribute Value Error: ")
-            print(f"  DNS's addresss  at {from_node}, at edge ({from_node + ' ' + to_node}) is not an acceptable value\n")
+            print(f"  dns's addresss  at {from_node}, at edge ({from_node + ' ' + to_node}) is not an acceptable value\n")
             exit(0)
 
         if node_type == 'Router':
-            if not is_valid_nat_opt(link_attr[end_node]['NAT']):
+            if not is_valid_nat_opt(edge_attr[end_node]['nat']):
                 print("\n  -Edge Attribute Value Error: ")
-                print(f"  NAT's value  at {from_node}, at edge ({from_node + ' ' + to_node}) is not an acceptable value\n")
+                print(f"  nat's value  at {from_node}, at edge ({from_node + ' ' + to_node}) is not an acceptable value\n")
                 exit(0)
-            if not  is_valid_ip(link_attr[end_node]['private_IP']):
+            if not  is_valid_ip(edge_attr[end_node]['private_ip']):
                 print("\n  -Edge Attribute Value Error: ")
-                print(f"  private_IP value at {from_node}, at edge ({from_node + ' ' + to_node}) is not an acceptable value\n")
+                print(f"  private_ip value at {from_node}, at edge ({from_node + ' ' + to_node}) is not an acceptable value\n")
                 exit(0)
 
 
 def is_valid_mac(mac: str) -> bool:
-    """ Checks if an address is a valid MAC address """
-    # TODO Regex to be explained
+    """ Checks if an address is a valid mac address
+    
+        -A valid mac address consists of 12 hexadecimal digits, organized
+        in 6 pairs and those pairs are seperated by  hyphen (-)
+    
+    """
+    
     return bool(re.match("[0-9a-f]{2}([-:]?)[0-9a-f]{2}(\\1[0-9a-f]{2}){4}$", mac.lower()))
 
 
 def is_valid_ip(ip: str) -> bool:
-    """ Checks if an address is a valid IP address """
+    """ Checks if an address is a valid ip address 
+        
+        -A valid ip address has length of 32 bit formatted as four 8-bit fields 
+        separated by periods.Each 8-bit field represents a byte of the ip address
+        Every 8-bit field is written as an integer number of range 0-255
+        
+        -Eg:
+            192.168.1.20 is a valid ip address
+            192.168.1.260 in NOT a valid ip address -260 > 255
+            192.168.001.20 in NOT a valid ip address -leading zeros in 3rd field
     
-    addr = ip.split(".")
-    if len(addr) != 4 or not all((x.isdecimal()) for x in addr) :
+    """
+    
+    addr_fields = ip.split(".")
+    if len(addr_fields) != 4 or not all((dest_value.isdecimal()) for dest_value in addr_fields) :
         return False    
     
-    return all((int(x) >= 0 and int(x) <= 255 and (len(x.lstrip('0')) == len(x) or len(x) == 1)) for x in addr)
+    return all((int(dest_value) >= 0 and int(dest_value) <= 255 and (len(dest_value.lstrip('0')) == len(dest_value) or len(dest_value) == 1)) for dest_value in addr_fields)
 
 
 def is_valid_mask(mask: str) -> bool: 
-    """ Checks if an address is a valid network Mask """
+    """ Checks if an address is a valid network mask
+        -A network mask is valid if:
+            -It is a valid ip address and 
+            -It has N ones-1 i a row
+
+        -Eg: 
+            - 11111111.11111111.11111111.00000000 is a valid mask
+            - 11111111.11111111.11111111.00110000 is NOT a valid mask
+    """    
     
     binary_mask =  IPAddress(mask).bits() 
     ones_counter = 0 
@@ -434,251 +482,97 @@ def is_valid_mask(mask: str) -> bool:
     
     return(binary_mask.count('1') == ones_counter)
 
-
-def is_valid_nat_opt(NAT: str) -> bool:
-    """ Checks if nat option in valid """
-    return NAT in {'enabled', 'disabled'}
+#TODO It may be redundent
+def is_valid_nat_opt(nat: str) -> bool:
+    """ Checks if nat option in valid
+        nat option in a Router should ne enabled or disabled
+    
+    """
+    return nat in {'enabled', 'disabled'}
     
 
-# FIXME -To long, repeated code, not elegant
-def create_adapters() -> None:
-    """ Creates the Adapter ojects from network_adapters """
+def create_interfaces() -> None:
+    """ Creates the network interface objects from graph's edge attributes 
+        
+        -Scans through networks edges attributes to extract different
+        network interfaces, creates network interface objects and adds them to
+        each node, at network_interfaces field 
+    """
 
-    # Adding network_adapters attribute to graph
-    for node in NETWORK_GRAPH.nodes: 
-        NETWORK_GRAPH.nodes[node]["network_adapters"] = []
-
-
-    # Creating network Adapter object for every different network adapter and adding the Adapter to the node it belongs as attribute
+    end_nodes = ['left_end', 'right_end']
     for edge in NETWORK_GRAPH.edges: 
 
-        left_node_type = NETWORK_GRAPH.nodes[edge[0]]['node_type']
-        right_node_type = NETWORK_GRAPH.nodes[edge[1]]['node_type']
+        for index, end_node in enumerate(end_nodes):
+            node_type = NETWORK_GRAPH.nodes[edge[index]]['node_type']
 
-        # Left end adapters
-        if left_node_type == 'Hub':
-            pass
-        
-        elif left_node_type == 'Router':
-            left_end_adapter = na.RouterAdapter(
-                                NETWORK_GRAPH.edges[edge]['left_end']["MAC"], NETWORK_GRAPH.edges[edge]['left_end']["IP"], 
-                                NETWORK_GRAPH.edges[edge]['left_end']["Mask"], NETWORK_GRAPH.edges[edge]['left_end']["Gateway"], 
-                                NETWORK_GRAPH.edges[edge]['left_end']["DNS"], NETWORK_GRAPH.edges[edge]['left_end']["NAT"],  
-                                NETWORK_GRAPH.edges[edge]['left_end']["private_IP"])
-        
-        elif left_node_type == 'Switch':
-            left_end_adapter = na.Adapter(
-                                NETWORK_GRAPH.edges[edge]['left_end']["MAC"])
+            if node_type == 'Hub':
+                interface = nif.Interface(NETWORK_GRAPH.edges[edge][end_node])
 
-        else:
-            left_end_adapter = na.PCAdapter(
-                                NETWORK_GRAPH.edges[edge]['left_end']["MAC"], NETWORK_GRAPH.edges[edge]['left_end']["IP"], 
-                                NETWORK_GRAPH.edges[edge]['left_end']["Mask"],NETWORK_GRAPH.edges[edge]['left_end']["Gateway"], 
-                                NETWORK_GRAPH.edges[edge]['left_end']["DNS"])
-       
-       # Right end adapters
-        if right_node_type == 'Hub':
-            pass
-        
-        elif right_node_type == 'Router':
-            right_end_adapter = na.RouterAdapter(
-                                NETWORK_GRAPH.edges[edge]['right_end']["MAC"], NETWORK_GRAPH.edges[edge]['right_end']["IP"], 
-                                NETWORK_GRAPH.edges[edge]['right_end']["Mask"], NETWORK_GRAPH.edges[edge]['right_end']["Gateway"], 
-                                NETWORK_GRAPH.edges[edge]['right_end']["DNS"], NETWORK_GRAPH.edges[edge]['right_end']["NAT"], 
-                                NETWORK_GRAPH.edges[edge]['right_end']["private_IP"])
+            elif node_type == 'Router':
+                interface = nif.RouterInterface(NETWORK_GRAPH.edges[edge][end_node]) 
 
-        elif right_node_type == 'Switch':
-            right_end_adapter = na.Adapter(
-                                NETWORK_GRAPH.edges[edge]['right_end']["MAC"])
+            elif node_type == 'Switch':
+                interface = nif.L2Interface(NETWORK_GRAPH.edges[edge][end_node])
 
-        else:
-            right_end_adapter = na.PCAdapter(
-                                NETWORK_GRAPH.edges[edge]['right_end']["MAC"], NETWORK_GRAPH.edges[edge]['right_end']["IP"], 
-                                NETWORK_GRAPH.edges[edge]['right_end']["Mask"], NETWORK_GRAPH.edges[edge]['right_end']["Gateway"], 
-                                NETWORK_GRAPH.edges[edge]['right_end']["DNS"])
+            else:
+                interface = nif.PcInterface(NETWORK_GRAPH.edges[edge][end_node])
 
-
-        found_left_adapter = False
-        found_right_adapter = False
-
-        if left_node_type == 'Hub': 
-            pass
-        elif not NETWORK_GRAPH.nodes[edge[0]]['network_adapters']:
-            NETWORK_GRAPH.nodes[edge[0]]['network_adapters'].append(left_end_adapter)
-        else:
-            for adapter in NETWORK_GRAPH.nodes[edge[0]]['network_adapters']:
-                if adapter == left_end_adapter: 
-                    found_left_adapter = True
-            if not found_left_adapter: 
-                NETWORK_GRAPH.nodes[edge[0]]['network_adapters'].append(left_end_adapter)
-
-        if right_node_type == 'Hub':
-            pass
-        elif not NETWORK_GRAPH.nodes[edge[1]]['network_adapters']: 
-            NETWORK_GRAPH.nodes[edge[1]]['network_adapters'].append(right_end_adapter)
-        else:
-            for adapter in NETWORK_GRAPH.nodes[edge[1]]['network_adapters']:
-                if adapter == right_end_adapter: 
-                    found_right_adapter = True
-            if not found_right_adapter: 
-                NETWORK_GRAPH.nodes[edge[1]]['network_adapters'].append(right_end_adapter)
-
-
+            if interface not in NETWORK_GRAPH.nodes[edge[index]]['network_interfaces']:
+                NETWORK_GRAPH.nodes[edge[index]]['network_interfaces'].append(interface)
+            elif node_type in {'Client_PC', 'Server_PC'}: 
+                print(f"Warning: Duplicate network interface found on {edge[index]}")
+            
+            
 def create_subnet_mac_table(subnet: nx.DiGraph) -> pd.DataFrame:
-    """ Create a table for every MAC address there is in a given subnet """
+    """ Create a table for every mac address there is in a given subnet """
     
-    mac_table_dict = {"Node": [], "MAC": []}
+    mac_table_dict = {"Node": [], "mac": []} 
     for node in subnet:
-        if subnet.nodes[node]['node_type'] != "Hub":
-            for adapter in subnet.nodes[node]['network_adapters']:
+        if subnet.nodes[node]['node_type'] != "Hub":    #No mac for hub
+            for interfac in subnet.nodes[node]['network_interfaces']:
                 mac_table_dict["Node"].append(node)
-                mac_table_dict["MAC"].append(str(adapter.MAC))
+                mac_table_dict["mac"].append(str(interfac.mac))
 
     return pd.DataFrame(mac_table_dict)
 
 
-def create_network_ip_table() -> pd.DataFrame:
-    """ Table that contains every public IP on the network
+def create_router_addresses_table() -> pd.DataFrame:
+    """ Table that contains every subnet address on the network """
     
-    -Solution1 : Scan the whole NETWORK_GRAPH and add every public ip to the table
-    -Solution2 : Add every public subnets ip table to the table
-        -Must find Router subnets to contain every network adapter
-    
-    TODO: Decide beetween solutions. Solution 2 seems to be better
-    """
-    ip_table_dict = {"Node": [], "IP": []}
+    router_addresses = {}
 
     for node in NETWORK_GRAPH:
-        for adapter in NETWORK_GRAPH.nodes[node]['network_adapters']:
-            if not adapter.IP.is_private():
-                ip_table_dict["Node"].append(node)
-                ip_table_dict["IP"].append(str(adapter.IP))
+        if NETWORK_GRAPH.nodes[node]['node_type'] == "Router":
+            for interface in NETWORK_GRAPH.nodes[node]['network_interfaces']:
+                router_addresses[str(interface.ip)] = node
+                #router_addresses["Subnet Address"].append(str(interface.ip)) #+ '/' + str(interface.mask.netmask_bits()))
     
-    NETWORK_GRAPH.ip_table = pd.DataFrame(ip_table_dict)
+    NETWORK_GRAPH.router_addresses = router_addresses
+    #print(router_addresses)
+
 
 
 def create_subnet_ip_table(subnet: nx.DiGraph) -> pd.DataFrame:
-    """ Create a table for every IP address there is in a given subnet """
+    """ Create a table for every ip address there is in a given subnet """
     
-    ip_table_dict = {"Node": [], "IP": []}
+    ip_table_dict = {"Node": [], "ip": []}
 
     for node in subnet.nodes:
         if subnet.nodes[node]['node_type'] in ["Client_PC", "Server_PC", "Router"]:
-            for adapter in subnet.nodes[node]['network_adapters']:
+            for interface in subnet.nodes[node]['network_interfaces']:
                 ip_table_dict["Node"].append(node)
-                ip_table_dict["IP"].append(str(adapter.IP))
+                ip_table_dict["ip"].append(str(interface.ip))
             
             #Add routers private ip to ip table
             if subnet.nat_enabled:
                 ip_table_dict["Node"].append(node)
-                ip_table_dict["IP"].append(str(adapter.private_IP))
-
+                ip_table_dict["ip"].append(str(interface.private_ip))
+    
+    
     return pd.DataFrame(ip_table_dict)
 
 
-def create_routing_tables() -> pd.DataFrame:
-    """Create routing table DataFrames"""
-    routing_table_list = []
-    routing_table_dict = {"Node": '', "routing_table": ''}
-    for node in NETWORK_GRAPH.nodes:
-        if NETWORK_GRAPH.nodes[node]['node_type'] == 'Router':
-            routing_table_df = pd.DataFrame(NETWORK_GRAPH.nodes[node]['routing_table'])
-
-
-def draw_network(filename: str) -> None: 
-    # Network graph visualization   
-    for node in NETWORK_GRAPH.nodes:
-        if NETWORK_GRAPH.nodes[node]['node_type'] == 'Router':
-            routing_table_df = pd.DataFrame(NETWORK_GRAPH.nodes[node]['routing_table'])
-    # Node attributes for visualization 
-    for node in NET_VIS_GRAPH.nodes:
-
-        if node['node_type'] == 'Client PC':
-            node["size"] = 28
-        elif node['node_type'] == 'Switch' or node['node_type'] == 'Hub' :
-            node['size'] = 20
-        else:
-            node['size'] = 20      
-        
-        node['label'] = f"-{node['label']}-"
-        for i in range(len( NETWORK_GRAPH.nodes[node['id']]['network_adapters'])):
-            if node['node_type'] != 'Switch' and node['node_type'] != 'Hub' :
-                node['label'] += "\n" + str(NETWORK_GRAPH.nodes[node['id']]['network_adapters'][i].IP) 
-    
-        # Viewed when mouse is over the node
-        node['shape'] = 'image'
-        node['image'] = ICONS_MAP[node['node_type']]
-        node['title'] = node['node_type'] + ' : ' + node['id'] + "<br>" 
-        if node['node_type'] == 'Router':
-            node['title'] += "Routing Table <br>"
-            node['title'] += "dest____mask_________link___nexthop:<br>"
-            for index, row in routing_table_df.iterrows():
-                node['title'] += str(row['dest']) + "  |  " + str(row['mask']) + "  |   " + str(row['link']) + "  |  " + str(row['next_hop'] +"<br>") 
-    
-     
-    # Edge attributes for visualization - Viewed when mouse is over the link     
-    for index, edge in enumerate(NET_VIS_GRAPH.edges):
-        
-        for node in NET_VIS_GRAPH.nodes:
-            if node['id'] == edge['from']:
-                left_end = node['node_type'] + " " + node['id']
-            if node['id'] == edge['to']:
-                right_end = node['node_type'] + " " + node['id']
-            
-        
-        # Link attributes
-        edge["title"] = "Link Attributes : <br>  <br> "
-        edge["title"] += f"Link ID : {edge['link_ID']}  <br> " 
-        edge["title"] += f"Capacity : {edge['capacity']} Mbps  <br>  Latency : {edge['latency']} ms  <br> <br>"
-        
-        # Left end attributes
-        left_end_node_type = NETWORK_GRAPH.nodes[edge['from']]['node_type']
-        edge["title"] += f"---Left End :{left_end}  --- <br> "
-        
-        if left_end_node_type != 'Hub':    
-            edge['title'] += f"MAC : {edge['left_end']['MAC']}  <br> "
-            if left_end_node_type != 'Switch':
-                edge['title'] += f"IP :  {edge['left_end']['IP']} <br> "
-                edge['title'] += f"Mask : {edge['left_end']['Mask']} <br> "
-                edge['title'] += f"Gateway : {edge['left_end']['Gateway']} <br> "
-                edge['title'] += f"DNS : {edge['left_end']['DNS']} <br>"
-                if left_end_node_type == 'Router':
-                    edge['title'] += f"NAT : {edge['left_end']['NAT']} <br>"
-        else:
-            edge['title'] += "I am a Hub, I am kinda dump" 
-
-        edge['title'] += "<br>"           
-        right_end_node_type = NETWORK_GRAPH.nodes[edge['to']]['node_type']
-        
-        # Right end attributes 
-        edge["title"] += f"---Right End :  {right_end}--- <br> "
-        if right_end_node_type != 'Hub':
-            edge['title'] += f"MAC : {edge['right_end']['MAC']} <br> "
-            if right_end_node_type != 'Switch' :
-                edge['title'] += f"IP :  {edge['right_end']['IP']} <br> "
-                edge['title'] += f"Mask : {edge['right_end']['Mask']} <br> "    
-                edge['title'] += f"Gateway : {edge['right_end']['Gateway']} <br> "
-                edge['title'] += f"DNS : {edge['right_end']['DNS']} <br>"
-                if right_end_node_type == 'Router':
-                    edge['title'] += f"NAT : {edge['right_end']['NAT']} <br>"
-        else:
-            edge['title'] += "I am a Hub, I am kinda dump <br> No attributes for me"
-        
-        edge['title'] += "<br>"
- 
-        
-        # Edge attributes - Viewed on edge
-        # edge["label"] = f"{edge['capacity']}Mbps"
-               
-
-    # Some initial options and display
-    # NET_VIS_GRAPH.set_edge_smooth('discrete')
-    NET_VIS_GRAPH.toggle_physics(False)
-    NET_VIS_GRAPH.barnes_hut()   
-    # NET_VIS_GRAPH.force_atlas_2based()
-    NET_VIS_GRAPH.show(filename + '_visualization.html')
-
-
+#TODO add comments and maybe break the functions
 def find_subnets() -> list:
     """ Finds subnets in a given network """
     
@@ -701,69 +595,58 @@ def find_subnets() -> list:
         for node in sub.nodes:
             for router in routers:
                 
+                # Checking if edge (node, router) exists
                 if NETWORK_GRAPH.has_edge(node, router):
                     
-                    mask = NETWORK_GRAPH.edges[node, router]['right_end']["Mask"]
-                    nat_enabled = NETWORK_GRAPH.edges[node, router]['right_end']["NAT"] == 'enabled'
+                    mask = NETWORK_GRAPH.edges[node, router]['right_end']["mask"]
+                    nat_enabled = NETWORK_GRAPH.edges[node, router]['right_end']["nat"] == 'enabled'
+
                     if nat_enabled:
-                        gateway =  NETWORK_GRAPH.edges[node, router]['right_end']["private_IP"]
-                        public_address = NETWORK_GRAPH.edges[node, router]['right_end']["IP"]
+                        gateway =  NETWORK_GRAPH.edges[node, router]['right_end']["private_ip"]
+                        public_address = NETWORK_GRAPH.edges[node, router]['right_end']["ip"]
                     else : 
-                        gateway = NETWORK_GRAPH.edges[node, router]['right_end']["IP"]
+                        gateway = NETWORK_GRAPH.edges[node, router]['right_end']["ip"]
                         public_address =  gateway
 
-                    router_adapter = [na.RouterAdapter(
-                                NETWORK_GRAPH.edges[node, router]['right_end']["MAC"], NETWORK_GRAPH.edges[node, router]['right_end']["IP"], 
-                                NETWORK_GRAPH.edges[node, router]['right_end']["Mask"], NETWORK_GRAPH.edges[node, router]['right_end']["Gateway"], 
-                                NETWORK_GRAPH.edges[node, router]['right_end']["DNS"], NETWORK_GRAPH.edges[node, router]['right_end']["NAT"],  
-                                NETWORK_GRAPH.edges[node, router]['right_end']["private_IP"])]
-
-
-                    subnet.add_nodes_from([(router, {'node_type' : 'Router', 'network_adapters' : router_adapter})])
+                    router_interface = [nif.RouterInterface(NETWORK_GRAPH.edges[node, router]['right_end'])]
+                    subnet.add_nodes_from([(router, {'node_type' : 'Router', 'routing_table' : NETWORK_GRAPH.nodes[router]['routing_table'], 'network_interfaces' : router_interface})])
                     subnet.add_edges_from([(node, router, NETWORK_GRAPH.edges[node, router])])
 
+                 # Checking if edge (router, node) exists
                 if NETWORK_GRAPH.has_edge(router, node):
                     
-                    mask = NETWORK_GRAPH.edges[router, node]['left_end']["Mask"]
-                    nat_enabled = NETWORK_GRAPH.edges[router, node]['left_end']["NAT"] == 'enabled'
+                    mask = NETWORK_GRAPH.edges[router, node]['left_end']["mask"]
+                    nat_enabled = NETWORK_GRAPH.edges[router, node]['left_end']["nat"] == 'enabled'
                     
                     if nat_enabled:
-                        gateway = NETWORK_GRAPH.edges[router, node]['left_end']["private_IP"]
-                        public_address = NETWORK_GRAPH.edges[router, node]['left_end']["IP"]
+                        gateway = NETWORK_GRAPH.edges[router, node]['left_end']["private_ip"]
+                        public_address = NETWORK_GRAPH.edges[router, node]['left_end']["ip"]
                     else :
-                        gateway = NETWORK_GRAPH.edges[router, node]['left_end']["IP"]
+                        gateway = NETWORK_GRAPH.edges[router, node]['left_end']["ip"]
                         public_address = gateway
 
-                    router_adapter = [na.RouterAdapter(
-                                NETWORK_GRAPH.edges[router, node]['left_end']["MAC"], NETWORK_GRAPH.edges[router, node]['left_end']["IP"], 
-                                NETWORK_GRAPH.edges[router, node]['left_end']["Mask"], NETWORK_GRAPH.edges[router, node]['left_end']["Gateway"], 
-                                NETWORK_GRAPH.edges[router, node]['left_end']["DNS"], NETWORK_GRAPH.edges[router, node]['left_end']["NAT"],  
-                                NETWORK_GRAPH.edges[router, node]['left_end']["private_IP"])]
-
-                    subnet.add_nodes_from([(router, {'node_type' : 'Router', 'network_adapters' : router_adapter})])
+                    router_interface = [nif.RouterInterface(NETWORK_GRAPH.edges[node, router]['left_end'])]
+                    subnet.add_nodes_from([(router, {'node_type' : 'Router', 'routing_table' : NETWORK_GRAPH.nodes[router]['routing_table'], 'network_interfaces' : router_interface})])
                     subnet.add_edges_from([(router, node, NETWORK_GRAPH.edges[router, node])])
 
-        if not has_router(subnet):
+        
+        # Checking if subnets router is found
+        if not any(subnet.nodes[node]['node_type'] == 'Router' for node in subnet):
             print("Found subnet without a router")
             exit(0)
         
  
-        # Subnets attributes as graph attributes
+        # Adding Subnet's attributes as graph attributes
         subnet.nat_enabled = nat_enabled    # Must be added before creating ip table
         subnet.mac_table = create_subnet_mac_table(subnet)
         subnet.ip_table = create_subnet_ip_table(subnet)
-        subnet.public_address = public_address
         subnet.gateway = IPAddress(gateway)
         subnet.mask = IPAddress(mask)
+        #subnet.subnet_address = IPNetwork(gateway + '/' + subnet_mas ) 
 
         subnets.append(subnet)
 
     return subnets    
-
-    
-def has_router(subnet: nx.DiGraph) -> bool:
-    """Checks if every subnet has a router-gateway"""
-    return any(subnet.nodes[node]['node_type'] == 'Router' for node in subnet)
 
 
 def is_unique_linkID() -> None:
@@ -777,50 +660,50 @@ def is_unique_linkID() -> None:
 
 
 def is_unique_mac(subnet: nx.DiGraph) -> None:
-    """ Checks if there are any duplibate MAC addresses in a given subnet"""
+    """ Checks if there are any duplibate mac addresses in a given subnet"""
 
-    mac_table_df = subnet.mac_table
-    duplicate_mac_df = mac_table_df[mac_table_df.duplicated(["MAC"], keep = False)]
+    duplicate_mac_df = subnet.mac_table[subnet.mac_table.duplicated(["mac"], keep = False)]    
     
     if not duplicate_mac_df.empty:
-        print(f"Found duplicate MAC addresses at subnet {str(subnet.gateway)}/{str(subnet.mask.netmask_bits())}: \n{duplicate_mac_df.to_string(index=False)}\n")
+        print(f"Found duplicate mac addresses at subnet {str(subnet.gateway)}/{str(subnet.mask.netmask_bits())}: \n{duplicate_mac_df.to_string(index=False)}\n")
 
 
 def is_unique_subnet_ip(subnet: nx.DiGraph) -> None:
-    """Checks if the IP addresses of the subnet are unique"""
+    """Checks if the ip addresses of the subnet are unique"""
     
     ip_table_df = subnet.ip_table
-    duplicate_ip_df = ip_table_df[ip_table_df.duplicated(["IP"], keep = False)]
+    duplicate_ip_df = ip_table_df[ip_table_df.duplicated(["ip"], keep = False)]
     
     if not duplicate_ip_df.empty:
-        print(f"-Found duplicate IP addresses at subnet {str(subnet.gateway)}/{str(subnet.mask.netmask_bits())}: \n{duplicate_ip_df.to_string(index=False)}\n")
+        print(f"-Found duplicate ip addresses at subnet {str(subnet.gateway)}/{str(subnet.mask.netmask_bits())}: \n{duplicate_ip_df.to_string(index=False)}\n")
 
 
 def ip_belongs_at_subnet(subnet: nx.DiGraph) -> None:
-    # Checks if IP address belongs at its subnet
+    # Checks if ip address belongs at its subnet
     # Find nodes gateway, see if it matches subnets gateway
-    # and see if nodes IP belongs at subnet
+    # and see if nodes ip belongs at subnet
+    
     for node in subnet:
         if subnet.nodes[node]['node_type'] not in ['Switch', 'Hub', 'Router']:
-            for i in range(len(subnet.nodes[node]['network_adapters'])):                    
-                nodes_gateway_address = subnet.nodes[node]['network_adapters'][i].Gateway
+            for i in range(len(subnet.nodes[node]['network_interfaces'])):                    
+                nodes_gateway_address = subnet.nodes[node]['network_interfaces'][i].gateway
                 
                 # Checks if subnets gateway matches the gateway of the rest of the nodes
                 if subnet.gateway != nodes_gateway_address:
-                    print(f"-Gateway error at {node}, routers IP: {subnet.gateway} subnets gateway {nodes_gateway_address}\n")    
+                    print(f"-gateway error at {node}, routers ip: {subnet.gateway} subnets gateway {nodes_gateway_address}\n")    
                 
-                ip_address = subnet.nodes[node]['network_adapters'][i].IP
-                subnet_mask = '/' + str(subnet.nodes[node]['network_adapters'][i].Mask.netmask_bits())
+                ip_address = subnet.nodes[node]['network_interfaces'][i].ip
+                subnet_mask = '/' + str(subnet.nodes[node]['network_interfaces'][i].mask.netmask_bits())
                 
-                # IP belongs at its subnet
+                # ip belongs at its subnet
                 if ip_address not in IPNetwork(str(subnet.gateway) + subnet_mask):
-                    print(f"-{node}'s IP address: {str(ip_address)}  does not belong at its subnet {str(subnet.gateway) + subnet_mask}\n")         
+                    print(f"-{node}'s ip address: {str(ip_address)}  does not belong at its subnet {str(subnet.gateway) + subnet_mask}\n")         
 
 
 def has_valid_private_addr(subnet: nx.DiGraph) -> None:
     """
-    Checks if an address in a NAT network is private or not
-    in a given private (NAT) network
+    Checks if an address in a nat network is private or not
+    in a given private (nat) network
       
       Private address prefixes:
           10/8  
@@ -829,82 +712,141 @@ def has_valid_private_addr(subnet: nx.DiGraph) -> None:
     
     """
     for index, row in subnet.ip_table.iterrows():
-        ip_address = IPAddress(str(row.IP))
+        ip_address = IPAddress(str(row.ip))
         
-        # Subnets public IP should not be private 
+        # Subnets public ip should not be private 
         if str(ip_address) == subnet.public_address:
             if ip_address.is_private():
-                print("-Routers public IP should be public\n")
+                print("-Routers public ip should be public\n")
                 continue    # next ip
         
-        if not IPAddress(str(row.IP)).is_private():
-            print("-Found non private IP addresses in a private network\n")
+        if not IPAddress(str(row.ip)).is_private():
+            print("-Found non private ip addresses in a private network\n")
             print(subnet.ip_table.loc[[index]])    
 
 
 def has_valid_public_addr(subnet: nx.DiGraph) -> None:
     """
     Checks if an address is public address or not 
-    in a given public network (non-NAT)
+    in a given public network (non-nat)
     """
     for index, row in subnet.ip_table.iterrows():
         
-        ip_address = IPAddress(str(row.IP))
+        ip_address = IPAddress(str(row.ip))
         
-        if IPAddress(str(row.IP)).is_private():
-            print("-Found private IP addresses in a non-private network\n")
+        if IPAddress(str(row.ip)).is_private():
+            print("-Found private ip addresses in a non-private network\n")
             print(subnet.ip_table.loc[[index]])    
     
 
 def is_unique_network_ip():
     ip_table_df = NETWORK_GRAPH.ip_table
-    duplicate_ip_df = ip_table_df[ip_table_df.duplicated(["IP"], keep = False)]
+    duplicate_ip_df = ip_table_df[ip_table_df.duplicated(["ip"], keep = False)]
     
     if not duplicate_ip_df.empty:
-        print(f"-Found duplicate IP addresses at network \n{duplicate_ip_df.to_string(index=False)}\n")
-
-
+        print(f"-Found duplicate ip addresses at network \n{duplicate_ip_df.to_string(index=False)}\n")
 
 
 def validate_routing_tables():
-    #  1.Validate destination: Make sure that destination exists in the network
-    #  2.Validate link: Make sure that the link/interface exists
-    #  3.Validate next_hop : Make sure that next_hop/gateway exists in the network
+    """
+    Validates the routes beetween the nodes
+    """
     
-    routing_dest_exists()
-    routing_link_exists()
-    routing_next_hop_exists()
-     pass
+    #For every sender node
+    for sender_node in NETWORK_GRAPH.nodes:
+        if NETWORK_GRAPH.nodes[sender_node]['node_type'] in {"Client_PC", "Server_PC"}:
+            
+            #For every senders interface (usally only 1)
+            for sender_interface in NETWORK_GRAPH.nodes[sender_node]['network_interfaces']:
+                
+                #For every destination node
+                for dest_node in NETWORK_GRAPH.nodes: 
+                    if NETWORK_GRAPH.nodes[dest_node]['node_type'] in {"Client_PC", "Server_PC"} and sender_node != dest_node:
+                        
+                        
+                        router_id = NETWORK_GRAPH.router_addresses[str(sender_interface.gateway)]
+                        routing_table = NETWORK_GRAPH.nodes[router_id]["routing_table"]
+                    
+                        
+                        #For every destination nodes interface (usually only 1)
+                        for dest_interface in NETWORK_GRAPH.nodes[dest_node]['network_interfaces']:
+                            
+                            #Do not try to find route in nodes that are in the same subnet-YET!
+                            if dest_interface.ip in IPNetwork(str(sender_interface.ip) + "/24"):
+                                break
+                            
+                            destination = str(dest_interface.ip)
+                            routing_path = [str(sender_interface.ip)]
+                            routing_path.append(str(sender_interface.gateway))
+                            node_path = [sender_node]
+                            node_path.append(router_id)
+                            dest_found = False
+                            loop_found = False
 
+                            while(not(dest_found or loop_found)):
+                                
+                                dest_entry_in_rt = False
+                                dest_entry_value = 0 
+                            
+                                # Checks if there is an entry for destination in routing table
+                                for dest_entry in list(routing_table['dest']):
+                                    if destination in IPNetwork(dest_entry + "/" + str(dest_interface.mask.netmask_bits())):
+                                        dest_entry_value = dest_entry
+                                        dest_entry_in_rt = True
+                                
+                                # If destination found in routing table, find destinations next hop
+                                if dest_entry_in_rt:        
+                                    next_hop = routing_table.loc[routing_table['dest'] == dest_entry_value].next_hop.values[0]
+                                    
+                                    # Found loop in the path
+                                    if next_hop in routing_path and next_hop != dest_entry:
+                                        routing_path.append(next_hop)
+                                        loop_found = True
+                                        break 
+                                    else:
+                                        routing_path.append(next_hop)
+                                    
+                                    # Destinations network found
+                                    if destination in IPNetwork(next_hop + "/" + str(dest_interface.mask.netmask_bits())):# TODO Use current interfaces mask
+                                        dest_found = True
+                                    else:
+                                        # TODO Check that next_hop is a Router and it is indeed connected to the node!
+                                        router = NETWORK_GRAPH.router_addresses[next_hop]
+                                        node_path.append(router)
+                                        routing_table = NETWORK_GRAPH.nodes[router]["routing_table"]
 
-def routing_dest_exists(routing_table):
-    for dest in routing_table['dest'].values:
-        pass
-
-
-# def validate_routing_link():
-#     pass
-
-
-# def validate_routing_next_hop():
-#     pass
-
-
+                                else:
+                                    # Did not find destinations entry in routing table, take as next hop tables default gateway 
+                                    if "0.0.0.0" in list(routing_table.dest):
+                                        next_hop = routing_table.loc[routing_table['dest'] == "0.0.0.0"].next_hop.values[0]
+                                    else:
+                                        print(f"Did not find entry or default route from {sender_interface.ip} to {destination} on the routing table!")
+                                        exit()
+                                    
+                                    router_id = NETWORK_GRAPH.router_addresses[next_hop]
+                                    routing_table = NETWORK_GRAPH.nodes[router_id]["routing_table"]
+                                    node_path.append(router_id)
+                                    
+                            # 
+                            print(f"{sender_node}: {sender_interface.ip} ---> {dest_node}: {dest_interface.ip}")
+                            if dest_found:
+                                node_path.append(dest_node)
+                                #print(f"Found route- {routing_path}")
+                                #print(f"FROM: {}")
+                                print(f"Path: {node_path}\n")
+                            
+                            
+                            if loop_found:
+                                #Found loop
+                                print(f"Found loop {node_path}\n")
+                            
+   
 def ip_config() -> None: 
-    # Shows every adapter
+    # Shows every interface
     
     for node in NETWORK_GRAPH.nodes:
-        for i in range(len(NETWORK_GRAPH.nodes[node]['network_adapters'])) :
-            print(f"Node: {node}, Type: {NETWORK_GRAPH.nodes[node]['node_type']} - Network Adapters: \n{NETWORK_GRAPH.nodes[node]['network_adapters'][i].__str__()}")
-
-
-def print_route() -> None:
-    # Shows every routing table
-    
-    for node in NETWORK_GRAPH.nodes:
-        if NETWORK_GRAPH.nodes[node]['node_type'] == 'Router':
-            routing_table_df = pd.DataFrame(NETWORK_GRAPH.nodes[node]['routing_table'])
-            print(f"---------Routers {node} routing table---------\n\n {str(routing_table_df)} \n\n\n")
+        for interface in NETWORK_GRAPH.nodes[node]['network_interfaces']:
+            print(f"Node: {node}, Type: {NETWORK_GRAPH.nodes[node]['node_type']}  \n{interface.__str__()}\n")
 
 
 def find_file(filename: str) -> None:
@@ -916,45 +858,67 @@ def find_file(filename: str) -> None:
 
 def validate_subnets(network_subnets: list) -> None:
     """
-    Checks if:
-        -Every mac address in a network is unique
-        -Every IP address in a private network is  private
-        -Every IP address in a public network is public 
+    Through subnet validation we make sure that:
+        -Every mac address in a subnet is unique
+        -Every ip address in a private network is  private
+        -Every ip address in a public network is public 
         -Every node in a subnet has the right gateway 
-        -Every IP address in a subnet belongs at its subnet
-        -Every IP address in a subnet is unique
+        -Every ip address in a subnet belongs at its subnet
+        -Every ip address in a subnet is unique
     """
     for subnet in network_subnets:
        
-       # MAC address in a network is unique
+       # mac address in a network is unique
         is_unique_mac(subnet)
         
-        # IP address in a private network is  private
+        # ip address in a private network is  private
         if subnet.nat_enabled:
             has_valid_private_addr(subnet)
         
-        # IP address in a public network is public 
+        # ip address in a public network is public 
         else:
             has_valid_public_addr(subnet)
 
-        # IP address in a subnet belongs at its subnet
+        # ip address in a subnet belongs at its subnet
         ip_belongs_at_subnet(subnet)
         
-        # IP address in a subnet is unique
+        # ip address in a subnet is unique
         is_unique_subnet_ip(subnet)
 
 
-def validate_network() -> None:
-    """ Validates the network as a whole"""
-    create_network_ip_table()
+def init_visualization(filename: str):
+    """This function initializes visualization
+        It parses one of the visualization themes from a yaml config file
+        and initializes the network renderer
 
-    # Checks if linkIDs are unique
-    is_unique_linkID()
+        Available aesthetic profiles:
+            2D 
+                -black_and_white
+                -soft_dark
+                -total_dark
+                -neon_dark
+                -classic_blue
+                -light_grey_black
+                -light_grey_white
+                -light_grey_blue
+            3D
+                #TODO
+    """
+    
+    theme_option = "neon_dark"
 
-    # Check if every public IP in the network is unique
-    is_unique_network_ip()
+    #Load visualization theme config file
+    with open("vis_themes.yaml", 'r') as cf:		
+       
+        try:
+            vis_theme = yaml.load(cf, Loader = yaml.FullLoader)
+        except yaml.YAMLError as exc:
+            print(exc)
 
-
+    
+    renderer = rd.Renderer(NETWORK_GRAPH, HELP_NET_GRAPH, vis_theme[theme_option], filename.split('.')[0])
+    renderer.render()
+    
 #Main funtion
 def main(filename: str) -> None:
     
@@ -966,24 +930,22 @@ def main(filename: str) -> None:
     # Parse the tgf file
     parse_tgf_file(filename)
 
-    # Find network adapters from edge attributes
-    create_adapters()
-
     # Find network subnets
     network_subnets = find_subnets()
     
     # Validate subnets
     validate_subnets(network_subnets)
     
-    # Validate the whole network
-    validate_network()
-        
-    # Draw network graph
-    # draw_network(filename.split('.')[0])
+    #validate_routing_tables
+    #validate_routing_tables()
     
-    # show_network_adapters()
-
-   
+    #Show every network interface on the network
+    #ip_config()
+    
+    # Draw network graph
+    #init_visualization(filename)
+    
+    
 if __name__ == "__main__":
     main("test_top.tgf")
     
