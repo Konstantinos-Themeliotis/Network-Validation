@@ -19,6 +19,7 @@ TAB = "    "
 nodes = {}
 edges = {}
 interfaces = {}
+node_interfaces = {}
 
 # Different types of network interfaces 
 interface = {'if_id' : ''}
@@ -32,6 +33,7 @@ node_type_interfaces = {'Hub' : interface, 'Switch' : l2_interface, 'Router' : r
 
 
 def find_path() -> str:
+
     """ Returns examples full directory path """
     
     # The main directory where the scripts are stored
@@ -53,8 +55,8 @@ def find_path() -> str:
     return topologies_path + "\\" + EXAMPLE
 
 
-def parse_topology(filename: str = NETWORK_TOPOLOGY, path: str = find_path()) -> None:
-    """ Parses the .tgf file"""
+def parse_topology(path: str, filename: str = NETWORK_TOPOLOGY) -> None:
+    """ Parses the networks topology that is defined at a tgf file"""
 
     line_counter = 0
     nodes_parsing_completed = False
@@ -108,14 +110,34 @@ def parse_topology(filename: str = NETWORK_TOPOLOGY, path: str = find_path()) ->
                 left_end_node_id = line.split("~")[0].split(" ")[0].strip()
                 right_end_node_id = line.split("~")[0].split(" ")[1].strip()
                 edge_attr = ast.literal_eval(line.split("~")[1].strip())                
-                #edge_tuple = (left_end_node_id, right_end_node_id, edge_attr)
-                #edges.append(edge_tuple)
                 key = f"{left_end_node_id} {right_end_node_id}"               
                 edges[key] = edge_attr
 
 
-def parse_config_files(path: str = find_path()) -> None:
-    """ Parses the configuration files for network devices"""
+def nodes_config_exists(path: str) -> None:
+    """ Checks that there is a configuration file for each node-device"""
+    
+    config_files_set = set([x.split("_")[0] for x in os.listdir(path) if x.split(".")[1] == 'yml'])
+    missing_config_nodes = set(nodes) - config_files_set
+    if missing_config_nodes:
+        print(f"Initialization error: Did not find any interface configuration file for this nodes: {missing_config_nodes}")
+        exit()
+
+
+def group_nodes_interfaces() -> None:
+    """ Groups together the interfaces of every node, found on the tgf file"""
+    
+    for node in nodes:
+        node_interfaces[node] = []
+    
+    for edge in edges:
+        for index, end_node in enumerate(["left_end", "right_end"]):
+            if edges[edge][end_node]["if_id"] not in node_interfaces[edge.split(" ")[index]]:
+                node_interfaces[edge.split(" ")[index]].append(edges[edge][end_node]["if_id"])
+
+
+def parse_config_files(path: str) -> None:
+    """ Parses the configuration files for the network topology devices"""
     
     for filename in os.listdir(path):
         
@@ -128,15 +150,29 @@ def parse_config_files(path: str = find_path()) -> None:
                     print(exc)
             
             extract_data_from_config(node_id, config_data)
-                        
+
+
+def check_unconfig_interfaces(node_id: str, nodes_interfaces_list: list) -> None:
+    """ Checks for any defined interface in the tgf that has not been configured"""
+    
+    missing_interfaces = set(node_interfaces[node_id]) - set(nodes_interfaces_list)
+    if missing_interfaces:
+        print(f"Initialaization error: {missing_interfaces}")
+        exit()
+
 
 def extract_data_from_config(node_id: str, config_data: dict) -> None:
-    """ Extract interfaces data """
-
+    """ Extracts the needed data from every interface defined in the configuration file 
+        that later will initialize the devices defined in the tgf file
+    """
+    
     node_type = nodes[node_id]['node_type']
+    nodes_interfaces_list = []
+    
     for interface in config_data['network']['ethernets']:
         my_interface = copy.deepcopy(node_type_interfaces[node_type])
         interfaces[interface] = my_interface
+        nodes_interfaces_list.append(interface)
 
         my_interface['if_id'] = interface
         if node_type == 'Hub':
@@ -159,9 +195,11 @@ def extract_data_from_config(node_id: str, config_data: dict) -> None:
         else:
             print(f"Error: {node_type} in not a valid node type")
     
+    check_unconfig_interfaces(node_id, nodes_interfaces_list)
+
 
 def merge_data() -> None:
-    """ Adds the parsed config files data at edges """
+    """ Merge the parsed-extracted data from the configuration files with the network topology """
     
     for edge in edges:
         for end in ['left_end', 'right_end']:
@@ -169,10 +207,10 @@ def merge_data() -> None:
 
 
 def export_to_tgf() -> None:
-    """ Export network to tgf """
+    """ Export the network topology with the loaded data to a tgf file """
 
     # Writing nodes to file   
-    output_file = open("out", "w")
+    output_file = open("out.tgf", "w")
     for node in nodes:
         output_file.write(f"{node} ~ {nodes[node]};\n")
         
@@ -183,27 +221,44 @@ def export_to_tgf() -> None:
     for edge in edges:
         output_file.write(f"{edge} ~ {'{'}\n")
         for attribute in edges[edge]:
-           output_file.write(f"{TAB}'{str(attribute)}' : {edges[edge][attribute]}\n")
+              
+            if attribute in {'left_end', 'right_end'}:
+                output_file.write(f"{TAB}'{str(attribute)}' : {edges[edge][attribute]}")
+            else:
+                output_file.write(f"{TAB}'{str(attribute)}' : '{edges[edge][attribute]}'")
+           
+            # Do not add write any commas past the last attribute
+            output_file.write(f"{',' * int(attribute != 'latency')}\n")
 
         output_file.write("};\n\n")
     
     output_file.close()
+    print("Device configuration completed!")
 
 
 def main():
     """ Main function"""
     
-    parse_topology()
-  
-    parse_config_files()
+    # Find examples directory path
+    path = find_path()
 
+    # Load the network topology from the tgf file
+    parse_topology(path)
+    
+    # Validate that there is a configuration file for every device-node
+    nodes_config_exists(path)
+    
+    # Group each nodes interfaces together
+    group_nodes_interfaces()
+
+    # Parse the device configuration files
+    parse_config_files(path)
+
+    # Merge data-initialize every device with the data from the configuration files
     merge_data()
     
+    # Export the initialized topology to a tgf file
     export_to_tgf()
-
-    print(f"Nodes: {nodes}\n")
-    print(f"Edges: {edges}\n")
-    print(f"Interfaces: {interfaces}\n")
 
     
 
