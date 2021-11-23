@@ -1,0 +1,116 @@
+<html>
+<head>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis/4.16.1/vis.css" type="text/css" />
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/vis/4.16.1/vis-network.min.js"> </script>
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+
+<style type="text/css">
+
+        #mynetwork {
+            width: 100%;
+            height: 100%;
+            background-color: #000000;
+            border: 1px solid lightgray;
+            position: relative;
+            float: left;
+        }
+
+        
+
+        
+
+        
+</style>
+
+</head>
+
+<body>
+<div id = "mynetwork"></div>
+
+
+<script type="text/javascript">
+
+    // initialize global variables.
+    var edges;
+    var nodes;
+    var network; 
+    var container;
+    var options, data;
+
+    
+    // This method is responsible for drawing the graph, returns the drawn network
+    function drawGraph() {
+        var container = document.getElementById('mynetwork');
+        
+        
+
+        // parsing and collecting nodes and edges from the python
+        nodes = new vis.DataSet([{"font": {"color": "#7FB785"}, "id": "pc1", "image": "https://raw.githubusercontent.com/dperpel/Network-Validation/main/icons/black%20icons/black_pc.png", "label": "-pc1-\n192.168.1.10", "node_type": "Client_PC", "shape": "image", "size": 30, "title": "Client_PC : pc1\u003cbr\u003e"}, {"font": {"color": "#7FB785"}, "id": "sw1", "image": "https://raw.githubusercontent.com/dperpel/Network-Validation/main/icons/black%20icons/black_switch.png", "label": "-sw1-", "node_type": "Switch", "shape": "image", "size": 30, "title": "Switch : sw1\u003cbr\u003e"}, {"font": {"color": "#7FB785"}, "id": "pc2", "image": "https://raw.githubusercontent.com/dperpel/Network-Validation/main/icons/black%20icons/black_pc.png", "label": "-pc2-\n192.168.1.11", "node_type": "Client_PC", "shape": "image", "size": 30, "title": "Client_PC : pc2\u003cbr\u003e"}, {"font": {"color": "#7FB785"}, "id": "pc3", "image": "https://raw.githubusercontent.com/dperpel/Network-Validation/main/icons/black%20icons/black_pc.png", "label": "-pc3-\n22.2.0.10", "node_type": "Client_PC", "shape": "image", "size": 30, "title": "Client_PC : pc3\u003cbr\u003e"}, {"font": {"color": "#7FB785"}, "id": "sw2", "image": "https://raw.githubusercontent.com/dperpel/Network-Validation/main/icons/black%20icons/black_switch.png", "label": "-sw2-", "node_type": "Switch", "shape": "image", "size": 30, "title": "Switch : sw2\u003cbr\u003e"}, {"font": {"color": "#7FB785"}, "id": "pc4", "image": "https://raw.githubusercontent.com/dperpel/Network-Validation/main/icons/black%20icons/black_pc.png", "label": "-pc4-\n22.2.0.12", "node_type": "Client_PC", "shape": "image", "size": 30, "title": "Client_PC : pc4\u003cbr\u003e"}, {"font": {"color": "#7FB785"}, "id": "pc5", "image": "https://raw.githubusercontent.com/dperpel/Network-Validation/main/icons/black%20icons/black_pc.png", "label": "-pc5-\n23.2.0.12", "node_type": "Client_PC", "shape": "image", "size": 30, "title": "Client_PC : pc5\u003cbr\u003e"}, {"font": {"color": "#7FB785"}, "id": "sw3", "image": "https://raw.githubusercontent.com/dperpel/Network-Validation/main/icons/black%20icons/black_switch.png", "label": "-sw3-", "node_type": "Switch", "shape": "image", "size": 30, "title": "Switch : sw3\u003cbr\u003e"}, {"font": {"color": "#7FB785"}, "id": "pc6", "image": "https://raw.githubusercontent.com/dperpel/Network-Validation/main/icons/black%20icons/black_pc.png", "label": "-pc6-\n23.2.0.22", "node_type": "Client_PC", "shape": "image", "size": 30, "title": "Client_PC : pc6\u003cbr\u003e"}, {"font": {"color": "#7FB785"}, "id": "sr1", "image": "https://raw.githubusercontent.com/dperpel/Network-Validation/main/icons/black%20icons/black_server.png", "label": "-sr1-\n23.2.0.14", "node_type": "Server_PC", "shape": "image", "size": 30, "title": "Server_PC : sr1\u003cbr\u003e"}, {"font": {"color": "#7FB785"}, "id": "r1", "image": "https://raw.githubusercontent.com/dperpel/Network-Validation/main/icons/black%20icons/black_router.png", "label": "-r1-\n192.168.1.1\n31.2.0.1\n32.2.0.1", "node_type": "Router", "routing_table": {"dest": ["19.2.0.1", "22.2.0.1", "23.2.0.1", "0.0.0.0"], "mask": ["255.255.255.0", "255.255.255.0", "255.255.255.0", "255.255.255.255"], "next_hop": ["19.2.0.1", "31.2.0.2", "32.2.0.3", "31.2.0.2"]}, "shape": "image", "size": 30, "title": "Router : r1\u003cbr\u003e"}, {"font": {"color": "#7FB785"}, "id": "r2", "image": "https://raw.githubusercontent.com/dperpel/Network-Validation/main/icons/black%20icons/black_router.png", "label": "-r2-\n22.2.0.1\n31.2.0.2\n33.2.0.2", "node_type": "Router", "routing_table": {"dest": ["19.2.0.1", "22.2.0.1", "23.2.0.1", "0.0.0.0"], "mask": ["255.255.255.0", "255.255.255.0", "255.255.255.0", "255.255.255.255"], "next_hop": ["31.2.0.1", "22.2.0.1", "33.2.0.3", "33.2.0.3"]}, "shape": "image", "size": 30, "title": "Router : r2\u003cbr\u003e"}, {"font": {"color": "#7FB785"}, "id": "r3", "image": "https://raw.githubusercontent.com/dperpel/Network-Validation/main/icons/black%20icons/black_router.png", "label": "-r3-\n23.2.0.1\n32.2.0.3\n33.2.0.3", "node_type": "Router", "routing_table": {"dest": ["19.2.0.1", "22.2.0.1", "23.2.0.1", "0.0.0.0"], "mask": ["255.255.255.0", "255.255.255.0", "255.255.255.0", "255.255.255.255"], "next_hop": ["32.2.0.1", "33.2.0.2", "23.2.0.1", "32.2.0.3"]}, "shape": "image", "size": 30, "title": "Router : r3\u003cbr\u003e"}]);
+        edges = new vis.DataSet([{"capacity": "100", "from": "pc1", "latency": "1", "left_end": {"dns": "8.8.8.8", "gateway": "192.168.1.1", "if_id": "eth11", "ip": "192.168.1.10", "mac": "00:11:22:33:44:05", "mask": "255.255.255.0"}, "link_ID": "1", "right_end": {"if_id": "eth10", "mac": "00:11:22:33:44:06"}, "title": "Link Attributes : \u003cbr\u003e  \u003cbr\u003e Link ID : 1  \u003cbr\u003e Capacity : 100 Mbps  \u003cbr\u003e  Latency : 1 ms  \u003cbr\u003e \u003cbr\u003e---Left End :Client_PC pc1  --- \u003cbr\u003e mac : 00:11:22:33:44:05  \u003cbr\u003e ip :  192.168.1.10 \u003cbr\u003e mask : 255.255.255.0 \u003cbr\u003e gateway : 192.168.1.1 \u003cbr\u003e dns : 8.8.8.8 \u003cbr\u003e\u003cbr\u003e---Right End :  Switch sw1--- \u003cbr\u003e mac : 00:11:22:33:44:06 \u003cbr\u003e \u003cbr\u003e", "to": "sw1", "weight": 1}, {"capacity": "100", "from": "pc2", "latency": "1", "left_end": {"dns": "8.8.8.8", "gateway": "192.168.1.1", "if_id": "eth12", "ip": "192.168.1.11", "mac": "00:11:22:33:44:04", "mask": "255.255.255.0"}, "link_ID": "1", "right_end": {"if_id": "eth10", "mac": "00:11:22:33:44:06"}, "title": "Link Attributes : \u003cbr\u003e  \u003cbr\u003e Link ID : 1  \u003cbr\u003e Capacity : 100 Mbps  \u003cbr\u003e  Latency : 1 ms  \u003cbr\u003e \u003cbr\u003e---Left End :Client_PC pc2  --- \u003cbr\u003e mac : 00:11:22:33:44:04  \u003cbr\u003e ip :  192.168.1.11 \u003cbr\u003e mask : 255.255.255.0 \u003cbr\u003e gateway : 192.168.1.1 \u003cbr\u003e dns : 8.8.8.8 \u003cbr\u003e\u003cbr\u003e---Right End :  Switch sw1--- \u003cbr\u003e mac : 00:11:22:33:44:06 \u003cbr\u003e \u003cbr\u003e", "to": "sw1", "weight": 1}, {"capacity": "100", "from": "pc3", "latency": "3", "left_end": {"dns": "8.8.8.8", "gateway": "22.2.0.1", "if_id": "eth21", "ip": "22.2.0.10", "mac": "00:11:22:33:44:05", "mask": "255.255.255.0"}, "link_ID": "2", "right_end": {"if_id": "eth20", "mac": "00:11:22:33:44:06"}, "title": "Link Attributes : \u003cbr\u003e  \u003cbr\u003e Link ID : 2  \u003cbr\u003e Capacity : 100 Mbps  \u003cbr\u003e  Latency : 3 ms  \u003cbr\u003e \u003cbr\u003e---Left End :Client_PC pc3  --- \u003cbr\u003e mac : 00:11:22:33:44:05  \u003cbr\u003e ip :  22.2.0.10 \u003cbr\u003e mask : 255.255.255.0 \u003cbr\u003e gateway : 22.2.0.1 \u003cbr\u003e dns : 8.8.8.8 \u003cbr\u003e\u003cbr\u003e---Right End :  Switch sw2--- \u003cbr\u003e mac : 00:11:22:33:44:06 \u003cbr\u003e \u003cbr\u003e", "to": "sw2", "weight": 1}, {"capacity": "100", "from": "pc4", "latency": "3", "left_end": {"dns": "8.8.8.8", "gateway": "22.2.0.1", "if_id": "eth22", "ip": "22.2.0.12", "mac": "00:11:22:33:44:16", "mask": "255.255.255.0"}, "link_ID": "2", "right_end": {"if_id": "eth20", "mac": "00:11:22:33:44:06"}, "title": "Link Attributes : \u003cbr\u003e  \u003cbr\u003e Link ID : 2  \u003cbr\u003e Capacity : 100 Mbps  \u003cbr\u003e  Latency : 3 ms  \u003cbr\u003e \u003cbr\u003e---Left End :Client_PC pc4  --- \u003cbr\u003e mac : 00:11:22:33:44:16  \u003cbr\u003e ip :  22.2.0.12 \u003cbr\u003e mask : 255.255.255.0 \u003cbr\u003e gateway : 22.2.0.1 \u003cbr\u003e dns : 8.8.8.8 \u003cbr\u003e\u003cbr\u003e---Right End :  Switch sw2--- \u003cbr\u003e mac : 00:11:22:33:44:06 \u003cbr\u003e \u003cbr\u003e", "to": "sw2", "weight": 1}, {"capacity": "100", "from": "pc5", "latency": "5", "left_end": {"dns": "8.8.8.8", "gateway": "23.2.0.1", "if_id": "eth31", "ip": "23.2.0.12", "mac": "00:11:22:55:44:16", "mask": "255.255.255.0"}, "link_ID": "4", "right_end": {"if_id": "eth30", "mac": "10:11:22:33:44:06"}, "title": "Link Attributes : \u003cbr\u003e  \u003cbr\u003e Link ID : 4  \u003cbr\u003e Capacity : 100 Mbps  \u003cbr\u003e  Latency : 5 ms  \u003cbr\u003e \u003cbr\u003e---Left End :Client_PC pc5  --- \u003cbr\u003e mac : 00:11:22:55:44:16  \u003cbr\u003e ip :  23.2.0.12 \u003cbr\u003e mask : 255.255.255.0 \u003cbr\u003e gateway : 23.2.0.1 \u003cbr\u003e dns : 8.8.8.8 \u003cbr\u003e\u003cbr\u003e---Right End :  Switch sw3--- \u003cbr\u003e mac : 10:11:22:33:44:06 \u003cbr\u003e \u003cbr\u003e", "to": "sw3", "weight": 1}, {"capacity": "100", "from": "pc6", "latency": "6", "left_end": {"dns": "8.8.8.8", "gateway": "23.2.0.1", "if_id": "eth32", "ip": "23.2.0.22", "mac": "00:11:12:33:44:16", "mask": "255.255.255.0"}, "link_ID": "4", "right_end": {"if_id": "eth30", "mac": "10:11:22:33:44:06"}, "title": "Link Attributes : \u003cbr\u003e  \u003cbr\u003e Link ID : 4  \u003cbr\u003e Capacity : 100 Mbps  \u003cbr\u003e  Latency : 6 ms  \u003cbr\u003e \u003cbr\u003e---Left End :Client_PC pc6  --- \u003cbr\u003e mac : 00:11:12:33:44:16  \u003cbr\u003e ip :  23.2.0.22 \u003cbr\u003e mask : 255.255.255.0 \u003cbr\u003e gateway : 23.2.0.1 \u003cbr\u003e dns : 8.8.8.8 \u003cbr\u003e\u003cbr\u003e---Right End :  Switch sw3--- \u003cbr\u003e mac : 10:11:22:33:44:06 \u003cbr\u003e \u003cbr\u003e", "to": "sw3", "weight": 1}, {"capacity": "100", "from": "sr1", "latency": "6", "left_end": {"dns": "8.8.8.8", "gateway": "23.2.0.1", "if_id": "eth33", "ip": "23.2.0.14", "mac": "01:11:22:33:44:16", "mask": "255.255.255.0"}, "link_ID": "4", "right_end": {"if_id": "eth30", "mac": "10:11:22:33:44:06"}, "title": "Link Attributes : \u003cbr\u003e  \u003cbr\u003e Link ID : 4  \u003cbr\u003e Capacity : 100 Mbps  \u003cbr\u003e  Latency : 6 ms  \u003cbr\u003e \u003cbr\u003e---Left End :Server_PC sr1  --- \u003cbr\u003e mac : 01:11:22:33:44:16  \u003cbr\u003e ip :  23.2.0.14 \u003cbr\u003e mask : 255.255.255.0 \u003cbr\u003e gateway : 23.2.0.1 \u003cbr\u003e dns : 8.8.8.8 \u003cbr\u003e\u003cbr\u003e---Right End :  Switch sw3--- \u003cbr\u003e mac : 10:11:22:33:44:06 \u003cbr\u003e \u003cbr\u003e", "to": "sw3", "weight": 1}, {"capacity": "100", "from": "sw1", "latency": "2", "left_end": {"if_id": "eth10", "mac": "00:11:22:33:44:06"}, "link_ID": "1", "right_end": {"dns": "8.8.8.8", "gateway": "0.0.0.0", "if_id": "eth100", "ip": "192.168.1.1", "mac": "00:11:22:33:44:01", "mask": "255.255.255.0", "nat": "enabled", "public_ip": "19.2.0.1/24"}, "title": "Link Attributes : \u003cbr\u003e  \u003cbr\u003e Link ID : 1  \u003cbr\u003e Capacity : 100 Mbps  \u003cbr\u003e  Latency : 2 ms  \u003cbr\u003e \u003cbr\u003e---Left End :Switch sw1  --- \u003cbr\u003e mac : 00:11:22:33:44:06  \u003cbr\u003e \u003cbr\u003e---Right End :  Router r1--- \u003cbr\u003e mac : 00:11:22:33:44:01 \u003cbr\u003e ip :  192.168.1.1 \u003cbr\u003e mask : 255.255.255.0 \u003cbr\u003e gateway : 0.0.0.0 \u003cbr\u003e dns : 8.8.8.8 \u003cbr\u003enat : enabled \u003cbr\u003epublic ip: 19.2.0.1/24\u003cbr\u003e", "to": "r1", "weight": 1}, {"capacity": "100", "from": "sw2", "latency": "4", "left_end": {"if_id": "eth20", "mac": "00:11:22:33:44:06"}, "link_ID": "2", "right_end": {"dns": "8.8.8.8", "gateway": "0.0.0.0", "if_id": "eth200", "ip": "22.2.0.1", "mac": "00:11:22:33:44:01", "mask": "255.255.255.0", "nat": "disabled", "public_ip": ""}, "title": "Link Attributes : \u003cbr\u003e  \u003cbr\u003e Link ID : 2  \u003cbr\u003e Capacity : 100 Mbps  \u003cbr\u003e  Latency : 4 ms  \u003cbr\u003e \u003cbr\u003e---Left End :Switch sw2  --- \u003cbr\u003e mac : 00:11:22:33:44:06  \u003cbr\u003e \u003cbr\u003e---Right End :  Router r2--- \u003cbr\u003e mac : 00:11:22:33:44:01 \u003cbr\u003e ip :  22.2.0.1 \u003cbr\u003e mask : 255.255.255.0 \u003cbr\u003e gateway : 0.0.0.0 \u003cbr\u003e dns : 8.8.8.8 \u003cbr\u003enat : disabled \u003cbr\u003e\u003cbr\u003e", "to": "r2", "weight": 1}, {"capacity": "100", "from": "sw3", "latency": "7", "left_end": {"if_id": "eth30", "mac": "10:11:22:33:44:06"}, "link_ID": "4", "right_end": {"dns": "8.8.8.8", "gateway": "0.0.0.0", "if_id": "eth300", "ip": "23.2.0.1", "mac": "00:11:22:33:44:01", "mask": "255.255.255.0", "nat": "disabled", "public_ip": ""}, "title": "Link Attributes : \u003cbr\u003e  \u003cbr\u003e Link ID : 4  \u003cbr\u003e Capacity : 100 Mbps  \u003cbr\u003e  Latency : 7 ms  \u003cbr\u003e \u003cbr\u003e---Left End :Switch sw3  --- \u003cbr\u003e mac : 10:11:22:33:44:06  \u003cbr\u003e \u003cbr\u003e---Right End :  Router r3--- \u003cbr\u003e mac : 00:11:22:33:44:01 \u003cbr\u003e ip :  23.2.0.1 \u003cbr\u003e mask : 255.255.255.0 \u003cbr\u003e gateway : 0.0.0.0 \u003cbr\u003e dns : 8.8.8.8 \u003cbr\u003enat : disabled \u003cbr\u003e\u003cbr\u003e", "to": "r3", "weight": 1}, {"capacity": "100", "from": "r1", "latency": "12", "left_end": {"dns": "8.8.8.8", "gateway": "0.0.0.0", "if_id": "reth11", "ip": "31.2.0.1", "mac": "00:11:22:33:44:02", "mask": "255.255.255.0", "nat": "disabled", "public_ip": ""}, "link_ID": "3", "right_end": {"dns": "8.8.8.8", "gateway": "0.0.0.0", "if_id": "reth12", "ip": "31.2.0.2", "mac": "00:11:22:33:44:02", "mask": "255.255.255.0", "nat": "disabled", "public_ip": ""}, "title": "Link Attributes : \u003cbr\u003e  \u003cbr\u003e Link ID : 3  \u003cbr\u003e Capacity : 100 Mbps  \u003cbr\u003e  Latency : 12 ms  \u003cbr\u003e \u003cbr\u003e---Left End :Router r1  --- \u003cbr\u003e mac : 00:11:22:33:44:02  \u003cbr\u003e ip :  31.2.0.1 \u003cbr\u003e mask : 255.255.255.0 \u003cbr\u003e gateway : 0.0.0.0 \u003cbr\u003e dns : 8.8.8.8 \u003cbr\u003enat : disabled \u003cbr\u003e\u003cbr\u003e---Right End :  Router r2--- \u003cbr\u003e mac : 00:11:22:33:44:02 \u003cbr\u003e ip :  31.2.0.2 \u003cbr\u003e mask : 255.255.255.0 \u003cbr\u003e gateway : 0.0.0.0 \u003cbr\u003e dns : 8.8.8.8 \u003cbr\u003enat : disabled \u003cbr\u003e\u003cbr\u003e", "to": "r2", "weight": 1}, {"capacity": "100", "from": "r1", "latency": "13", "left_end": {"dns": "8.8.8.8", "gateway": "0.0.0.0", "if_id": "reth21", "ip": "32.2.0.1", "mac": "00:11:22:33:44:02", "mask": "255.255.255.0", "nat": "disabled", "public_ip": ""}, "link_ID": "3", "right_end": {"dns": "8.8.8.8", "gateway": "0.0.0.0", "if_id": "reth23", "ip": "32.2.0.3", "mac": "00:11:22:33:44:02", "mask": "255.255.255.0", "nat": "disabled", "public_ip": ""}, "title": "Link Attributes : \u003cbr\u003e  \u003cbr\u003e Link ID : 3  \u003cbr\u003e Capacity : 100 Mbps  \u003cbr\u003e  Latency : 13 ms  \u003cbr\u003e \u003cbr\u003e---Left End :Router r1  --- \u003cbr\u003e mac : 00:11:22:33:44:02  \u003cbr\u003e ip :  32.2.0.1 \u003cbr\u003e mask : 255.255.255.0 \u003cbr\u003e gateway : 0.0.0.0 \u003cbr\u003e dns : 8.8.8.8 \u003cbr\u003enat : disabled \u003cbr\u003e\u003cbr\u003e---Right End :  Router r3--- \u003cbr\u003e mac : 00:11:22:33:44:02 \u003cbr\u003e ip :  32.2.0.3 \u003cbr\u003e mask : 255.255.255.0 \u003cbr\u003e gateway : 0.0.0.0 \u003cbr\u003e dns : 8.8.8.8 \u003cbr\u003enat : disabled \u003cbr\u003e\u003cbr\u003e", "to": "r3", "weight": 1}, {"capacity": "100", "from": "r2", "latency": "14", "left_end": {"dns": "8.8.8.8", "gateway": "0.0.0.0", "if_id": "reth32", "ip": "33.2.0.2", "mac": "00:11:22:33:44:02", "mask": "255.255.255.0", "nat": "disabled", "public_ip": ""}, "link_ID": "3", "right_end": {"dns": "8.8.8.8", "gateway": "0.0.0.0", "if_id": "reth33", "ip": "33.2.0.3", "mac": "00:11:22:33:44:02", "mask": "255.255.255.0", "nat": "disabled", "public_ip": ""}, "title": "Link Attributes : \u003cbr\u003e  \u003cbr\u003e Link ID : 3  \u003cbr\u003e Capacity : 100 Mbps  \u003cbr\u003e  Latency : 14 ms  \u003cbr\u003e \u003cbr\u003e---Left End :Router r2  --- \u003cbr\u003e mac : 00:11:22:33:44:02  \u003cbr\u003e ip :  33.2.0.2 \u003cbr\u003e mask : 255.255.255.0 \u003cbr\u003e gateway : 0.0.0.0 \u003cbr\u003e dns : 8.8.8.8 \u003cbr\u003enat : disabled \u003cbr\u003e\u003cbr\u003e---Right End :  Router r3--- \u003cbr\u003e mac : 00:11:22:33:44:02 \u003cbr\u003e ip :  33.2.0.3 \u003cbr\u003e mask : 255.255.255.0 \u003cbr\u003e gateway : 0.0.0.0 \u003cbr\u003e dns : 8.8.8.8 \u003cbr\u003enat : disabled \u003cbr\u003e\u003cbr\u003e", "to": "r3", "weight": 1}]);
+
+        // adding nodes and edges to the graph
+        data = {nodes: nodes, edges: edges};
+
+        var options = {
+    "configure": {
+        "enabled": false
+    },
+    "edges": {
+        "color": {
+            "inherit": true
+        },
+        "smooth": {
+            "enabled": false,
+            "type": "continuous"
+        }
+    },
+    "interaction": {
+        "dragNodes": true,
+        "hideEdgesOnDrag": false,
+        "hideNodesOnDrag": false
+    },
+    "physics": {
+        "barnesHut": {
+            "avoidOverlap": 0,
+            "centralGravity": 0.3,
+            "damping": 0.09,
+            "gravitationalConstant": -80000,
+            "springConstant": 0.001,
+            "springLength": 250
+        },
+        "enabled": false,
+        "stabilization": {
+            "enabled": true,
+            "fit": true,
+            "iterations": 1000,
+            "onlyDynamicEdges": false,
+            "updateInterval": 50
+        }
+    }
+};
+        
+        
+
+        
+
+        network = new vis.Network(container, data, options);
+	 
+        
+
+
+        
+
+        return network;
+
+    }
+
+    drawGraph();
+
+</script>
+</body>
+</html>
