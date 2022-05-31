@@ -76,7 +76,7 @@ class RouterInterface(L3Interface):
     def __init__(self, attr: dict) -> None:
         super().__init__(attr)
         self.nat = attr['nat']
-        self.public_ip = attr['public_ip']
+        self.public_ip = IPAddress(attr['public_ip'].split('/')[0])
     
     def __str__(self) -> str:
         output = f"NAT . . . . . . . . . . . . . . . : {self.nat}"

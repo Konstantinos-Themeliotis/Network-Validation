@@ -1,5 +1,8 @@
+""" TODO: Description """
+
 import abc
 import ast
+import tgf_validation as val
 
 
 class Abstract_TFG_Parser(object, metaclass = abc.ABCMeta):
@@ -102,6 +105,12 @@ class Def_TGF_Parser(Abstract_TFG_Parser):
          
         node_id = line.split("~")[0].strip()  
         node_attr = ast.literal_eval(line.split("~")[1].strip())
+        
+        # Format and value validation for parsed data
+        # If error occurs, parsing ends!
+        val.is_unique_node(self.filename, self.nodes, node_id)
+        val.validate_node_attributes(self.filename, node_id, node_attr)
+
         self.nodes[node_id] = node_attr
 
     # TODO validation
@@ -110,11 +119,17 @@ class Def_TGF_Parser(Abstract_TFG_Parser):
         
         left_end_node_id = line.split("~")[0].split(" ")[0].strip()
         right_end_node_id = line.split("~")[0].split(" ")[1].strip()
-        edge_attr = ast.literal_eval(line.split("~")[1].strip())                
-        key = f"{left_end_node_id} {right_end_node_id}"               
-        self.edges[key] = edge_attr
+        edge_attr = ast.literal_eval(line.split("~")[1].strip())
+        edge = f"{left_end_node_id} {right_end_node_id}"
 
-    def parse_network_topology(self) -> tuple(dict, dict):
+        # Format and value validation for parsed data
+        # If error occurs, parsing ends!
+        val.is_unique_edge(self.filename, self.edges, edge)               
+        val.validate_edge_attributes(self.filename, edge, edge_attr)                
+        
+        self.edges[edge] = edge_attr
+
+    def parse_network_topology(self) -> tuple:
         """ Function that start parsing  """
         
         self.start_parsing()
@@ -137,23 +152,22 @@ class Init_TGF_Parser(Abstract_TFG_Parser):
 
         node_id = line.split("~")[0].strip()  
         node_attr = ast.literal_eval(line.split("~")[1].strip())       
-        #validate_node_attributes(node_id, node_attr)
         node_tuple = (node_id, node_attr)
+        
         self.nodes.append(node_tuple)
 
-    # TODO Validation
+    
     def parse_edges(self, line: str) -> None:
         """ Concrete method for parsing the configurated edges"""
 
         left_end_node_id = line.split("~")[0].split(" ")[0].strip()
         right_end_node_id = line.split("~")[0].split(" ")[1].strip()
         edge_attr = ast.literal_eval(line.split("~")[1].strip())
-        #validate_edge_attributes(nodes, left_end_node_id, right_end_node_id, edge_attr)     
         edge_tuple = (left_end_node_id, right_end_node_id, edge_attr)
         self.edges.append(edge_tuple)                         
 
 
-    def parse_network_topology(self) -> tuple(list, list):
+    def parse_network_topology(self) -> tuple:
         """ Function that starts parsing"""
 
         self.start_parsing()
