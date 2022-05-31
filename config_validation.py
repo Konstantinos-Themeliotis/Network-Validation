@@ -1,4 +1,4 @@
-""" TODO: Description """
+""" File responsible for configuration file validation """
 
 
 from os import error
