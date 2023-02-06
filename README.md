@@ -9,8 +9,27 @@ The aim of this work is to present the field of network automation and to deepen
 
 
 ## Network Validation Tool
-Purpose of this tool is to make a basic simulation of a computer network. More specific:<br>
--initialize a network topology 
--visualize the network topology 
--validate the network topology and its parameters.
+Purpose of this tool is to perform basic validation operations on a computer network and detect any error or misconfiguartion that could break it down. The major steps we follow to set up a network topology and start the validation:<br>
+- Network topology initialization
+- Device configuration
+- Network topology visualization
+- Validation of the network topology and its parameters.
 
+### -Network Topology Initialization
+For the Network topology Trivial Graph Format is used. TGF is a simple text-based adjecency list file format for descibing graphs. For the purpose of our project we expanded the format to support more complex attributes in its nodes and edges.
+### -Device configuration
+For each device defined inside the network topology file, there is a configuration file containing the devices network interfaces. The configuration files follow the netplan network configuration format.
+### -Network Topology Visualization
+For the topology visualization, the pyvis libary is used. It takes as input a NetworkX Graph and tranlates it into a pyvis graph and handles the visualization.The result is a HTML file containing the visualized network topology
+### -Network Topology Validation
+For the validation of the network, various validation operation are performed upon the network and its devices. The target of those operation is to validate that each device is correctly configurated and works correctly as a unit and that the network as whole (end-to-end) behaves as expected.
+
+
+## Tools
+The project was developed using Python 3.8. These modules-libraries were used to develop it:
+- [NetworkX](https://networkx.org/)
+- [Pandas](https://pandas.pydata.org/)
+- netaddr
+
+## More
+For the detailed presentation of the Diploma Thesis and the network validation tool, view the pdf file located at docs.
