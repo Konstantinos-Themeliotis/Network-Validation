@@ -1,0 +1,97 @@
+# Yaml configuration file which contains visualization 
+# themes for networks topology graph visualization
+
+# Classic 2D black and white profile
+black_and_white:
+  colors:
+    bgcolor: "#ffffff"    # white backgroung color
+    font_color: "#000000" # black font color
+  icons:
+    Client_PC: https://raw.githubusercontent.com/dperpel/Network-Validation/main/icons/white%20icons/white_pc.png
+    Server_PC: https://raw.githubusercontent.com/dperpel/Network-Validation/main/icons/white%20icons/white_server.png
+    Router: https://raw.githubusercontent.com/dperpel/Network-Validation/main/icons/white%20icons/white_router.png
+    Switch: https://raw.githubusercontent.com/dperpel/Network-Validation/main/icons/white%20icons/white_switch.png
+    Hub: https://raw.githubusercontent.com/dperpel/Network-Validation/main/icons/white%20icons/white_hub.png
+
+
+# Classic 2D  Dark Profile
+soft_dark:
+  colors:
+    bgcolor: "#222222"
+    font_color: "#ffffff"
+  icons: 
+    Client_PC: https://raw.githubusercontent.com/dperpel/Network-Validation/main/icons/black%20icons/black_pc.png
+    Server_PC: https://raw.githubusercontent.com/dperpel/Network-Validation/main/icons/black%20icons/black_server.png
+    Router: https://raw.githubusercontent.com/dperpel/Network-Validation/main/icons/black%20icons/black_router.png
+    Switch: https://raw.githubusercontent.com/dperpel/Network-Validation/main/icons/black%20icons/black_switch.png
+    Hub: https://raw.githubusercontent.com/dperpel/Network-Validation/main/icons/black%20icons/black_hub.png
+
+total_dark:
+  colors:
+    bgcolor: "#000000"
+    font_color: "#ffffff"
+  icons: 
+    Client_PC: https://raw.githubusercontent.com/dperpel/Network-Validation/main/icons/black%20icons/black_pc.png
+    Server_PC: https://raw.githubusercontent.com/dperpel/Network-Validation/main/icons/black%20icons/black_server.png
+    Router: https://raw.githubusercontent.com/dperpel/Network-Validation/main/icons/black%20icons/black_router.png
+    Switch: https://raw.githubusercontent.com/dperpel/Network-Validation/main/icons/black%20icons/black_switch.png
+    Hub: https://raw.githubusercontent.com/dperpel/Network-Validation/main/icons/black%20icons/black_hub.png
+
+#
+neon_dark:
+  colors:
+    bgcolor: "#000000"
+    font_color: "#7FB785"
+  icons: 
+    Client_PC: https://raw.githubusercontent.com/dperpel/Network-Validation/main/icons/black%20icons/black_pc.png
+    Server_PC: https://raw.githubusercontent.com/dperpel/Network-Validation/main/icons/black%20icons/black_server.png
+    Router: https://raw.githubusercontent.com/dperpel/Network-Validation/main/icons/black%20icons/black_router.png
+    Switch: https://raw.githubusercontent.com/dperpel/Network-Validation/main/icons/black%20icons/black_switch.png
+    Hub: https://raw.githubusercontent.com/dperpel/Network-Validation/main/icons/black%20icons/black_hub.png
+
+classic_blue:
+  colors:
+    bgcolor: "#ffffff"    # white backgroung color
+    font_color: "#000000" # black font color
+  icons:
+    Client_PC: https://raw.githubusercontent.com/dperpel/Network-Validation/main/icons/blue%20icons/blue_pc.png
+    Server_PC: https://raw.githubusercontent.com/dperpel/Network-Validation/main/icons/blue%20icons/blue_server.png
+    Router: https://raw.githubusercontent.com/dperpel/Network-Validation/main/icons/blue%20icons/blue_router.png
+    Switch: https://raw.githubusercontent.com/dperpel/Network-Validation/main/icons/blue%20icons/blue_switch.png
+    Hub: https://raw.githubusercontent.com/dperpel/Network-Validation/main/icons/blue%20icons/blue_hub.png
+
+#
+light_grey_black:
+  colors:
+    bgcolor: "#E1E1E1"
+    font_color: "#000000"
+  icons: 
+    Client_PC: https://raw.githubusercontent.com/dperpel/Network-Validation/main/icons/black%20icons/black_pc.png
+    Server_PC: https://raw.githubusercontent.com/dperpel/Network-Validation/main/icons/black%20icons/black_server.png
+    Router: https://raw.githubusercontent.com/dperpel/Network-Validation/main/icons/black%20icons/black_router.png
+    Switch: https://raw.githubusercontent.com/dperpel/Network-Validation/main/icons/black%20icons/black_switch.png
+    Hub: https://raw.githubusercontent.com/dperpel/Network-Validation/main/icons/black%20icons/black_hub.png
+
+
+light_grey_white:
+  colors:
+    bgcolor: "#E1E1E1"    # white backgroung color
+    font_color: "#000000" # black font color
+  icons:
+    Client_PC: https://raw.githubusercontent.com/dperpel/Network-Validation/main/icons/white%20icons/white_pc.png
+    Server_PC: https://raw.githubusercontent.com/dperpel/Network-Validation/main/icons/white%20icons/white_server.png
+    Router: https://raw.githubusercontent.com/dperpel/Network-Validation/main/icons/white%20icons/white_router.png
+    Switch: https://raw.githubusercontent.com/dperpel/Network-Validation/main/icons/white%20icons/white_switch.png
+    Hub: https://raw.githubusercontent.com/dperpel/Network-Validation/main/icons/white%20icons/white_hub.png
+
+
+light_grey_blue:
+  colors:
+    bgcolor: "#E1E1E1"    # white backgroung color
+    font_color: "#000000" # black font color
+  icons:
+    Client_PC: https://raw.githubusercontent.com/dperpel/Network-Validation/main/icons/blue%20icons/blue_pc.png
+    Server_PC: https://raw.githubusercontent.com/dperpel/Network-Validation/main/icons/blue%20icons/blue_server.png
+    Router: https://raw.githubusercontent.com/dperpel/Network-Validation/main/icons/blue%20icons/blue_router.png
+    Switch: https://raw.githubusercontent.com/dperpel/Network-Validation/main/icons/blue%20icons/blue_switch.png
+    Hub: https://raw.githubusercontent.com/dperpel/Network-Validation/main/icons/blue%20icons/blue_hub.png

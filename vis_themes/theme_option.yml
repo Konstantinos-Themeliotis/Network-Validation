@@ -1,0 +1,16 @@
+# Theme options for network topology visualization
+# using pyvis module
+# 
+# Available 2D themes:
+#   -black_and_white
+#   -soft_dark
+#   -total_dark
+#   -neon_dark
+#   -classic_blue
+#   -light_grey_black
+#   -light_grey_white
+#   -light_grey_blue
+# 
+# 3D themes to be added in the future!
+
+theme_option: 'light_grey_blue'
