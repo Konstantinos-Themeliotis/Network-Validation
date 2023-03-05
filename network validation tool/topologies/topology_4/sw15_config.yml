@@ -1,0 +1,11 @@
+# Topology 4 
+
+network:
+  version: 2
+  renderer: networkd
+  ethernets:     
+    eth01:
+      macaddress: '00-D0-56-F2-B5-21'
+    eth02:
+      macaddress: '00-D0-56-F2-B5-22'
+

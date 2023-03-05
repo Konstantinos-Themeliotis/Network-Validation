@@ -1,0 +1,40 @@
+# Topology 4 
+
+network:
+  version: 2
+  renderer: networkd
+  ethernets:     
+    eth01:
+      macaddress: '03-D0-56-F2-B5-01'
+      addresses: '100.1.1.1/24'
+      nat: 
+        status: 'disabled'
+        public_ip: '0.0.0.0' 
+      gateway4: '0.0.0.0'
+      nameservers:
+        addresses: [8.8.8.8]
+    
+    eth02:
+      macaddress: '03-D0-56-F2-B5-02'
+      addresses: '100.1.2.1/24'
+      nat: 
+        status: 'disabled' 
+        public_ip: '0.0.0.0'
+      gateway4: '0.0.0.0'
+      nameservers:
+        addresses: [8.8.8.8]
+    
+    eth03:
+      macaddress: '02-D0-56-F2-B5-03'
+      addresses: '100.1.20.2/24'
+      nat: 
+        status: 'disabled' 
+        public_ip: '0.0.0.0'
+      gateway4: '0.0.0.0'
+      nameservers:
+        addresses: [8.8.8.8]
+
+    rt:
+      routes:
+        to: ["100.1.1.8/24", "100.1.2.8/24", "0.0.0.0"]
+        via: ["100.1.1.8", "100.1.2.8", "100.1.20.1"]

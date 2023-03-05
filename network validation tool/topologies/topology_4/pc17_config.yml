@@ -1,0 +1,14 @@
+# Topology 4 
+
+network:
+  version: 2
+  renderer: networkd
+  ethernets:     
+    eth01:
+      macaddress: '00-D0-56-F2-B5-17'
+      addresses: '10.8.8.17/24'
+      gateway4: '10.8.8.1'
+      nameservers:
+          addresses: [8.8.8.8]
+      
+      

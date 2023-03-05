@@ -1,0 +1,568 @@
+// Client PC def
+pc1 ~ {'node_type' : 'Client_PC'};
+pc2 ~ {'node_type' : 'Client_PC'};
+pc3 ~ {'node_type' : 'Client_PC'};
+pc4 ~ {'node_type' : 'Client_PC'};
+pc5 ~ {'node_type' : 'Client_PC'};
+pc6 ~ {'node_type' : 'Client_PC'};
+pc7 ~ {'node_type' : 'Client_PC'};
+pc8 ~ {'node_type' : 'Client_PC'};
+pc9 ~ {'node_type' : 'Client_PC'};
+pc10 ~ {'node_type' : 'Client_PC'};
+pc11 ~ {'node_type' : 'Client_PC'};
+pc12 ~ {'node_type' : 'Client_PC'};
+pc13 ~ {'node_type' : 'Client_PC'};
+pc14 ~ {'node_type' : 'Client_PC'};
+pc15 ~ {'node_type' : 'Client_PC'};
+pc16 ~ {'node_type' : 'Client_PC'};
+pc17 ~ {'node_type' : 'Client_PC'};
+pc18 ~ {'node_type' : 'Client_PC'};
+pc19 ~ {'node_type' : 'Client_PC'};
+pc20 ~ {'node_type' : 'Client_PC'};
+
+// Server PC def
+sr1 ~ {'node_type' : 'Server_PC'};
+sr2 ~ {'node_type' : 'Server_PC'};
+sr3 ~ {'node_type' : 'Server_PC'};
+sr4 ~ {'node_type' : 'Server_PC'};
+
+// Switch def
+sw1 ~ {'node_type' : 'Switch'};
+sw2 ~ {'node_type' : 'Switch'};
+sw3 ~ {'node_type' : 'Switch'};
+sw4 ~ {'node_type' : 'Switch'};
+sw5 ~ {'node_type' : 'Switch'};
+sw6 ~ {'node_type' : 'Switch'};
+sw7 ~ {'node_type' : 'Switch'};
+sw8 ~ {'node_type' : 'Switch'};
+sw9 ~ {'node_type' : 'Switch'};
+sw10 ~ {'node_type' : 'Switch'};
+sw11 ~ {'node_type' : 'Switch'};
+sw12 ~ {'node_type' : 'Switch'};
+sw13 ~ {'node_type' : 'Switch'};
+sw14 ~ {'node_type' : 'Switch'};
+sw15 ~ {'node_type' : 'Switch'};
+
+
+
+// Router def
+r1 ~ {'node_type' : 'Router'};
+r2 ~ {'node_type' : 'Router'};
+r3 ~ {'node_type' : 'Router'};
+r4 ~ {'node_type' : 'Router'};
+r5 ~ {'node_type' : 'Router'};
+r6 ~ {'node_type' : 'Router'};
+r7 ~ {'node_type' : 'Router'};
+r8 ~ {'node_type' : 'Router'};
+r9 ~ {'node_type' : 'Router'};
+r10 ~ {'node_type' : 'Router'};
+r11 ~ {'node_type' : 'Router'};
+r12 ~ {'node_type' : 'Router'};
+r13 ~ {'node_type' : 'Router'};
+r14 ~ {'node_type' : 'Router'};
+r15 ~ {'node_type' : 'Router'};
+r16 ~ {'node_type' : 'Router'};
+r17 ~ {'node_type' : 'Router'};
+r18 ~ {'node_type' : 'Router'};
+
+
+#
+
+// --- First subnet ---
+pc1 sw1 ~ {
+    'link_ID' : '1' , 
+    'left_end' : {'if_id' : 'eth01'} , 
+    'right_end' : {'if_id' : 'eth01'}, 
+    'capacity' : '100', 
+    'latency' : '1'
+};
+
+pc2 sw1 ~ {
+    'link_ID' : '2' , 
+    'left_end' : {'if_id' : 'eth01'} , 
+    'right_end' : {'if_id' : 'eth01'}, 
+    'capacity' : '100', 
+    'latency' : '1'
+};
+
+pc3 sw1 ~ {
+    'link_ID' : '3' , 
+    'left_end' : {'if_id' : 'eth01'} , 
+    'right_end' : {'if_id' : 'eth01'}, 
+    'capacity' : '100', 
+    'latency' : '1'
+};
+
+sw1 r1 ~ {
+    'link_ID' : '4' , 
+    'left_end' : {'if_id' : 'eth02'} , 
+    'right_end' : {'if_id' : 'eth01'}, 
+    'capacity' : '100', 
+    'latency' : '2'
+};
+
+
+// --- Second subnet ---
+
+pc4 sw2 ~ {
+    'link_ID' : '5' , 
+    'left_end' : {'if_id' : 'eth01'} , 
+    'right_end' : {'if_id': 'eth01'}, 
+    'capacity' : '100', 
+    'latency' : '3'
+};
+
+pc5 sw2 ~ {
+    'link_ID' : '6' , 
+    'left_end' : {'if_id' : 'eth01'} , 
+    'right_end' : {'if_id': 'eth01'}, 
+    'capacity' : '100', 
+    'latency' : '3'
+};
+
+pc6 sw2 ~ {
+    'link_ID' : '7' , 
+    'left_end' : {'if_id' : 'eth01'} , 
+    'right_end' : {'if_id': 'eth01'}, 
+    'capacity' : '100', 
+    'latency' : '3'
+};
+
+sw2 r2 ~ {
+    'link_ID' : '8' , 
+    'left_end' : {'if_id' : 'eth02'} , 
+    'right_end' : {'if_id': 'eth01'}, 
+    'capacity' : '100', 
+    'latency' : '4'
+};
+
+// --- Third subnet ---
+
+pc7 sw3 ~ {
+    'link_ID' : '9' , 
+    'left_end' : {'if_id' : 'eth01'} , 
+    'right_end' : {'if_id' : 'eth01'}, 
+    'capacity' : '100', 
+    'latency' : '5'
+};
+
+pc8 sw3 ~ {
+    'link_ID' : '10' , 
+    'left_end' : {'if_id' : 'eth01'} , 
+    'right_end' : {'if_id' : 'eth01'}, 
+    'capacity' : '100', 
+    'latency' : '5'
+};
+
+sw3 r4 ~ {    
+    'link_ID' : '11' , 
+    'left_end' : {'if_id' : 'eth02'} , 
+    'right_end' : {'if_id' : 'eth01'}, 
+    'capacity' : '100', 
+    'latency' : '7'
+};
+
+// --- Fourth subnet ---
+pc9 sw4 ~ {
+    'link_ID' : '12' , 
+    'left_end' : {'if_id' : 'eth01'} , 
+    'right_end' : {'if_id': 'eth01'}, 
+    'capacity' : '100', 
+    'latency' : '8'
+};
+
+pc10 sw4 ~ {
+    'link_ID' : '13' , 
+    'left_end' : {'if_id' : 'eth01'} , 
+    'right_end' : {'if_id': 'eth01'}, 
+    'capacity' : '100', 
+    'latency' : '8'
+};
+
+sw4 r5 ~ {
+    'link_ID' : '14' , 
+    'left_end' : {'if_id' : 'eth02'} , 
+    'right_end' : {'if_id': 'eth01'}, 
+    'capacity' : '100', 
+    'latency' : '10'
+};
+
+// --- Fifth subnet --- 
+pc11 sw5 ~ {
+    'link_ID' : '15' , 
+    'left_end' : {'if_id' : 'eth01'} , 
+    'right_end' : {'if_id': 'eth01'}, 
+    'capacity' : '100', 
+    'latency' : '8'
+};
+
+pc12 sw5 ~ {
+    'link_ID' : '16' , 
+    'left_end' : {'if_id' : 'eth01'} , 
+    'right_end' : {'if_id': 'eth01'}, 
+    'capacity' : '100', 
+    'latency' : '8'
+};
+
+sw5 r6 ~ {
+    'link_ID' : '17' , 
+    'left_end' : {'if_id' : 'eth02'} , 
+    'right_end' : {'if_id': 'eth01'}, 
+    'capacity' : '100', 
+    'latency' : '10'
+};
+
+
+// --- Sixth subnet ---
+pc13 sw6 ~ {
+    'link_ID' : '18' , 
+    'left_end' : {'if_id' : 'eth01'} ,  
+    'right_end' : {'if_id': 'eth01'}, 
+    'capacity' : '100',
+    'latency' : '11'
+};
+
+pc14 sw6 ~ {
+    'link_ID' : '19' , 
+    'left_end' : {'if_id' : 'eth01'} ,  
+    'right_end' : {'if_id': 'eth01'}, 
+    'capacity' : '100',
+    'latency' : '11'
+};
+
+pc15 sw6 ~ {
+    'link_ID' : '20' , 
+    'left_end' : {'if_id' : 'eth01'} ,  
+    'right_end' : {'if_id': 'eth01'}, 
+    'capacity' : '100',
+    'latency' : '11'
+};
+
+sw6 sw8 ~ {
+    'link_ID' : '21' , 
+    'left_end' : {'if_id' : 'eth02'} ,  
+    'right_end' : {'if_id': 'eth01'}, 
+    'capacity' : '100',
+    'latency' : '11'
+};
+
+pc16 sw7 ~ {
+    'link_ID' : '22' , 
+    'left_end' : {'if_id' : 'eth01'} ,  
+    'right_end' : {'if_id': 'eth01'}, 
+    'capacity' : '100',
+    'latency' : '11'
+};
+
+pc17 sw7 ~ {
+    'link_ID' : '23' , 
+    'left_end' : {'if_id' : 'eth01'} ,  
+    'right_end' : {'if_id': 'eth01'}, 
+    'capacity' : '100',
+    'latency' : '11'
+};
+
+pc18 sw7 ~ {
+    'link_ID' : '24' , 
+    'left_end' : {'if_id' : 'eth01'} ,  
+    'right_end' : {'if_id': 'eth01'}, 
+    'capacity' : '100',
+    'latency' : '11'
+};
+
+sw7 sw8 ~ {
+    'link_ID' : '25' , 
+    'left_end' : {'if_id' : 'eth02'} ,  
+    'right_end' : {'if_id': 'eth01'}, 
+    'capacity' : '100',
+    'latency' : '11'
+};
+
+sw8 r8 ~ {
+    'link_ID' : '26' , 
+    'left_end' : {'if_id' : 'eth02'} ,  
+    'right_end' : {'if_id': 'eth01'}, 
+    'capacity' : '100',
+    'latency' : '11'
+};
+
+
+// --- Sixth subnet ---
+pc19 sw9 ~ {
+    'link_ID' : '27' , 
+    'left_end' : {'if_id' : 'eth01'} ,  
+    'right_end' : {'if_id': 'eth01'}, 
+    'capacity' : '100',
+    'latency' : '11'
+};
+
+pc20 sw9 ~ {
+    'link_ID' : '28' , 
+    'left_end' : {'if_id' : 'eth01'} ,  
+    'right_end' : {'if_id': 'eth01'}, 
+    'capacity' : '100',
+    'latency' : '11'
+};
+
+sw9 r9 ~ {
+    'link_ID' : '29' , 
+    'left_end' : {'if_id' : 'eth02'} ,  
+    'right_end' : {'if_id': 'eth01'}, 
+    'capacity' : '100',
+    'latency' : '11'
+};
+
+// --- Seventh subnet --- 
+
+sr1 sw10 ~ {
+    'link_ID' : '30' , 
+    'left_end' : {'if_id' : 'eth01'},
+    'right_end' : {'if_id': 'eth01'}, 
+    'capacity' : '100', 
+    'latency' : '11'
+};
+
+sw10 sw12 ~ {
+    'link_ID' : '31' , 
+    'left_end' : {'if_id' : 'eth02'} ,  
+    'right_end' : {'if_id': 'eth01'}, 
+    'capacity' : '100', 
+    'latency' : '11'
+};
+
+sr2 sw11 ~ {
+    'link_ID' : '32' , 
+    'left_end' : {'if_id' : 'eth01'} ,
+    'right_end' : {'if_id': 'eth01'},
+    'capacity' : '100', 
+    'latency' : '11'
+};
+
+sw11 sw12 ~ {
+    'link_ID' : '33' , 
+    'left_end' : {'if_id' : 'eth02'} ,  
+    'right_end' : {'if_id': 'eth01'}, 
+    'capacity' : '100', 
+    'latency' : '11'
+};
+
+sw12 r11 ~ {
+    'link_ID' : '34' , 
+    'left_end' : {'if_id' : 'eth02'} ,  
+    'right_end' : {'if_id': 'eth01'}, 
+    'capacity' : '100', 
+    'latency' : '11'
+};
+
+// --- Eight subnet --- 
+sr3 sw13 ~ {
+    'link_ID' : '35' , 
+    'left_end' : {'if_id' : 'eth01'},
+    'right_end' : {'if_id': 'eth01'}, 
+    'capacity' : '100', 
+    'latency' : '11'
+};
+
+sw13 sw15 ~ {
+    'link_ID' : '36' , 
+    'left_end' : {'if_id' : 'eth02'} ,  
+    'right_end' : {'if_id': 'eth01'}, 
+    'capacity' : '100', 
+    'latency' : '11'
+};
+
+sr4 sw14 ~ {
+    'link_ID' : '37' , 
+    'left_end' : {'if_id' : 'eth01'} ,
+    'right_end' : {'if_id': 'eth01'},
+    'capacity' : '100', 
+    'latency' : '11'
+};
+
+sw14 sw15 ~ {
+    'link_ID' : '38' , 
+    'left_end' : {'if_id' : 'eth02'} ,  
+    'right_end' : {'if_id': 'eth01'}, 
+    'capacity' : '100', 
+    'latency' : '11'
+};
+
+sw15 r12 ~ {
+    'link_ID' : '39' , 
+    'left_end' : {'if_id' : 'eth02'} ,  
+    'right_end' : {'if_id': 'eth01'}, 
+    'capacity' : '100', 
+    'latency' : '11'
+};
+
+// --- Router connections---
+
+r1 r3 ~ {
+    'link_ID' : '40' , 
+    'left_end' : {'if_id': 'eth02'} , 
+    'right_end' : {'if_id': 'eth01'}, 
+    'capacity' : '100', 
+    'latency' : '12'
+};
+
+r2 r3 ~ {
+    'link_ID' : '41' , 
+    'left_end' : {'if_id': 'eth02'} , 
+    'right_end' : {'if_id': 'eth02'}, 
+    'capacity' : '100', 
+    'latency' : '13'
+};
+
+
+r4 r7 ~ {
+    'link_ID' : '42' , 
+    'left_end' : {'if_id': 'eth02'} , 
+    'right_end' : {'if_id': 'eth01'}, 
+    'capacity' : '100'  , 
+    'latency' : '14'
+};
+
+r5 r7 ~ {
+    'link_ID' : '43' , 
+    'left_end' : {'if_id': 'eth02'} , 
+    'right_end' : {'if_id': 'eth02'}, 
+    'capacity' : '100', 
+    'latency' : '15'
+};
+
+r6 r7 ~ {
+    'link_ID' : '44' , 
+    'left_end' : {'if_id': 'eth02'} , 
+    'right_end' : {'if_id': 'eth03'}, 
+    'capacity' : '100', 
+    'latency' : '15'
+};
+
+r8 r10 ~ {
+    'link_ID' : '45' , 
+    'left_end' : {'if_id': 'eth02'} , 
+    'right_end' : {'if_id': 'eth01'}, 
+    'capacity' : '100', 
+    'latency' : '17'
+};
+
+r9 r10 ~ {
+    'link_ID' : '46' , 
+    'left_end' : {'if_id': 'eth02'} , 
+    'right_end' : {'if_id': 'eth02'}, 
+    'capacity' : '100', 
+    'latency' : '17'
+};
+
+
+r11 r13 ~ {
+    'link_ID' : '47' , 
+    'left_end' : {'if_id': 'eth02'} , 
+    'right_end' : {'if_id': 'eth01'}, 
+    'capacity' : '100', 
+    'latency' : '17'
+};
+
+r12 r13 ~ {
+    'link_ID' : '48' , 
+    'left_end' : {'if_id': 'eth02'} , 
+    'right_end' : {'if_id': 'eth02'}, 
+    'capacity' : '100', 
+    'latency' : '17'
+};
+
+r3 r14 ~ {
+    'link_ID' : '49' , 
+    'left_end' : {'if_id': 'eth03'} , 
+    'right_end' : {'if_id': 'eth01'}, 
+    'capacity' : '100', 
+    'latency' : '17'
+};
+
+r7 r15 ~ {
+    'link_ID' : '50' , 
+    'left_end' : {'if_id': 'eth04'} , 
+    'right_end' : {'if_id': 'eth01'}, 
+    'capacity' : '100', 
+    'latency' : '17'
+};
+
+r10 r17 ~ {
+    'link_ID' : '51' , 
+    'left_end' : {'if_id': 'eth03'} , 
+    'right_end' : {'if_id': 'eth01'}, 
+    'capacity' : '100', 
+    'latency' : '17'
+};
+
+r13 r16 ~ {
+    'link_ID' : '52' , 
+    'left_end' : {'if_id': 'eth03'} , 
+    'right_end' : {'if_id': 'eth01'}, 
+    'capacity' : '100', 
+    'latency' : '17'
+};
+
+r14 r16 ~ {
+    'link_ID' : '53' , 
+    'left_end' : {'if_id': 'eth02'} , 
+    'right_end' : {'if_id': 'eth02'}, 
+    'capacity' : '100', 
+    'latency' : '17'
+};
+
+r14 r17 ~ {
+    'link_ID' : '54' , 
+    'left_end' : {'if_id': 'eth03'} , 
+    'right_end' : {'if_id': 'eth02'}, 
+    'capacity' : '100', 
+    'latency' : '17'
+};
+
+r14 r18 ~ {
+    'link_ID' : '55' , 
+    'left_end' : {'if_id': 'eth04'} , 
+    'right_end' : {'if_id': 'eth01'}, 
+    'capacity' : '100', 
+    'latency' : '17'
+};
+
+r15 r16 ~ {
+    'link_ID' : '56' , 
+    'left_end' : {'if_id': 'eth02'} , 
+    'right_end' : {'if_id': 'eth03'}, 
+    'capacity' : '100', 
+    'latency' : '17'
+};
+
+r15 r17 ~ {
+    'link_ID' : '57' , 
+    'left_end' : {'if_id': 'eth03'} , 
+    'right_end' : {'if_id': 'eth03'}, 
+    'capacity' : '100', 
+    'latency' : '17'
+};
+
+r15 r18 ~ {
+    'link_ID' : '58' , 
+    'left_end' : {'if_id': 'eth04'} , 
+    'right_end' : {'if_id': 'eth02'}, 
+    'capacity' : '100', 
+    'latency' : '17'
+};
+
+r16 r18 ~ {
+    'link_ID' : '59' , 
+    'left_end' : {'if_id': 'eth04'} , 
+    'right_end' : {'if_id': 'eth03'}, 
+    'capacity' : '100', 
+    'latency' : '17'
+};
+
+r17 r18 ~ {
+    'link_ID' : '60' , 
+    'left_end' : {'if_id': 'eth04'} , 
+    'right_end' : {'if_id': 'eth04'}, 
+    'capacity' : '100', 
+    'latency' : '17'
+};

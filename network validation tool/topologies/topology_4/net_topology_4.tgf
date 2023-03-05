@@ -1,0 +1,666 @@
+pc1 ~ {'node_type': 'Client_PC'};
+pc2 ~ {'node_type': 'Client_PC'};
+pc3 ~ {'node_type': 'Client_PC'};
+pc4 ~ {'node_type': 'Client_PC'};
+pc5 ~ {'node_type': 'Client_PC'};
+pc6 ~ {'node_type': 'Client_PC'};
+pc7 ~ {'node_type': 'Client_PC'};
+pc8 ~ {'node_type': 'Client_PC'};
+pc9 ~ {'node_type': 'Client_PC'};
+pc10 ~ {'node_type': 'Client_PC'};
+pc11 ~ {'node_type': 'Client_PC'};
+pc12 ~ {'node_type': 'Client_PC'};
+pc13 ~ {'node_type': 'Client_PC'};
+pc14 ~ {'node_type': 'Client_PC'};
+pc15 ~ {'node_type': 'Client_PC'};
+pc16 ~ {'node_type': 'Client_PC'};
+pc17 ~ {'node_type': 'Client_PC'};
+pc18 ~ {'node_type': 'Client_PC'};
+pc19 ~ {'node_type': 'Client_PC'};
+pc20 ~ {'node_type': 'Client_PC'};
+sr1 ~ {'node_type': 'Server_PC'};
+sr2 ~ {'node_type': 'Server_PC'};
+sr3 ~ {'node_type': 'Server_PC'};
+sr4 ~ {'node_type': 'Server_PC'};
+sw1 ~ {'node_type': 'Switch'};
+sw2 ~ {'node_type': 'Switch'};
+sw3 ~ {'node_type': 'Switch'};
+sw4 ~ {'node_type': 'Switch'};
+sw5 ~ {'node_type': 'Switch'};
+sw6 ~ {'node_type': 'Switch'};
+sw7 ~ {'node_type': 'Switch'};
+sw8 ~ {'node_type': 'Switch'};
+sw9 ~ {'node_type': 'Switch'};
+sw10 ~ {'node_type': 'Switch'};
+sw11 ~ {'node_type': 'Switch'};
+sw12 ~ {'node_type': 'Switch'};
+sw13 ~ {'node_type': 'Switch'};
+sw14 ~ {'node_type': 'Switch'};
+sw15 ~ {'node_type': 'Switch'};
+r1 ~ {
+    'node_type' : 'Router',
+    'routing_table' : {
+        'dest' : ['100.1.1.8', '0.0.0.0'],
+        'mask' : ['255.255.255.0', '255.255.255.255'],
+        'next_hop' : ['100.1.1.8', '100.1.1.1']
+     } 
+ };
+r2 ~ {
+    'node_type' : 'Router',
+    'routing_table' : {
+        'dest' : ['100.1.2.8', '0.0.0.0'],
+        'mask' : ['255.255.255.0', '255.255.255.255'],
+        'next_hop' : ['100.1.2.8', '100.1.2.1']
+     } 
+ };
+r3 ~ {
+    'node_type' : 'Router',
+    'routing_table' : {
+        'dest' : ['100.1.1.8', '100.1.2.8', '0.0.0.0'],
+        'mask' : ['255.255.255.0', '255.255.255.0', '255.255.255.255'],
+        'next_hop' : ['100.1.1.8', '100.1.2.8', '100.1.20.1']
+     } 
+ };
+r4 ~ {
+    'node_type' : 'Router',
+    'routing_table' : {
+        'dest' : ['100.1.4.8', '0.0.0.0'],
+        'mask' : ['255.255.255.0', '255.255.255.255'],
+        'next_hop' : ['100.1.4.8', '100.1.4.1']
+     } 
+ };
+r5 ~ {
+    'node_type' : 'Router',
+    'routing_table' : {
+        'dest' : ['100.1.5.8', '0.0.0.0'],
+        'mask' : ['255.255.255.0', '255.255.255.255'],
+        'next_hop' : ['100.1.5.8', '100.1.5.1']
+     } 
+ };
+r6 ~ {
+    'node_type' : 'Router',
+    'routing_table' : {
+        'dest' : ['100.1.6.8', '0.0.0.0'],
+        'mask' : ['255.255.255.0', '255.255.255.255'],
+        'next_hop' : ['100.1.6.8', '100.1.6.1']
+     } 
+ };
+r7 ~ {
+    'node_type' : 'Router',
+    'routing_table' : {
+        'dest' : ['100.1.4.8', '100.1.5.8', '100.1.6.8', '0.0.0.0'],
+        'mask' : ['255.255.255.0', '255.255.255.0', '255.255.255.0', '255.255.255.255'],
+        'next_hop' : ['100.1.21.1', '100.1.21.1', '100.1.21.1', '100.1.21.1']
+     } 
+ };
+r8 ~ {
+    'node_type' : 'Router',
+    'routing_table' : {
+        'dest' : ['100.1.8.8', '0.0.0.0'],
+        'mask' : ['255.255.255.0', '255.255.255.255'],
+        'next_hop' : ['100.1.8.8', '100.1.8.1']
+     } 
+ };
+r9 ~ {
+    'node_type' : 'Router',
+    'routing_table' : {
+        'dest' : ['100.1.9.8', '0.0.0.0'],
+        'mask' : ['255.255.255.0', '255.255.255.255'],
+        'next_hop' : ['100.1.9.8', '100.1.9.1']
+     } 
+ };
+r10 ~ {
+    'node_type' : 'Router',
+    'routing_table' : {
+        'dest' : ['100.1.8.8', '100.1.9.8', '0.0.0.0'],
+        'mask' : ['255.255.255.0', '255.255.255.0', '255.255.255.255'],
+        'next_hop' : ['100.1.8.8', '100.1.9.8', '100.1.22.1']
+     } 
+ };
+r11 ~ {
+    'node_type' : 'Router',
+    'routing_table' : {
+        'dest' : ['100.1.11.1', '0.0.0.0'],
+        'mask' : ['255.255.255.0', '255.255.255.255'],
+        'next_hop' : ['100.1.11.1', '100.1.13.1']
+     } 
+ };
+r12 ~ {
+    'node_type' : 'Router',
+    'routing_table' : {
+        'dest' : ['100.1.12.1', '0.0.0.0'],
+        'mask' : ['255.255.255.0', '255.255.255.255'],
+        'next_hop' : ['100.1.12.1', '100.1.14.1']
+     } 
+ };
+r13 ~ {
+    'node_type' : 'Router',
+    'routing_table' : {
+        'dest' : ['100.1.11.1', '100.1.12.1', '0.0.0.0'],
+        'mask' : ['255.255.255.0', '255.255.255.0', '255.255.255.255'],
+        'next_hop' : ['100.1.13.8', '100.1.14.8', '100.1.23.1']
+     } 
+ };
+r14 ~ {
+    'node_type' : 'Router',
+    'routing_table' : {
+        'dest' : ['100.1.1.0', '100.1.2.0', '0.0.0.0'],
+        'mask' : ['255.255.255.0', '255.255.255.0', '255.255.255.255'],
+        'next_hop' : ['100.1.20.2', '100.1.20.2', '100.1.32.2']
+     } 
+ };
+r15 ~ {
+    'node_type' : 'Router',
+    'routing_table' : {
+        'dest' : ['100.1.4.0', '100.1.5.0', '100.1.6.0', '0.0.0.0'],
+        'mask' : ['255.255.255.0', '255.255.255.0', '255.255.255.0', '255.255.255.255'],
+        'next_hop' : ['100.1.21.8', '100.1.21.8', '100.1.21.8', '100.1.42.2']
+     } 
+ };
+r16 ~ {
+    'node_type' : 'Router',
+    'routing_table' : {
+        'dest' : ['100.1.11.0', '100.1.12.0', '0.0.0.0'],
+        'mask' : ['255.255.255.0', '255.255.255.0', '255.255.255.255'],
+        'next_hop' : ['100.1.23.2', '100.1.23.2', '100.1.50.2']
+     } 
+ };
+r17 ~ {
+    'node_type' : 'Router',
+    'routing_table' : {
+        'dest' : ['100.1.8.0', '100.1.9.0', '0.0.0.0'],
+        'mask' : ['255.255.255.0', '255.255.255.0', '255.255.255.255'],
+        'next_hop' : ['100.1.22.8', '100.1.22.8', '100.1.51.2']
+     } 
+ };
+r18 ~ {
+    'node_type' : 'Router',
+    'routing_table' : {
+        'dest' : ['100.1.1.0', '100.1.2.0', '100.1.4.0', '100.1.5.0', '100.1.6.0', '100.1.8.0', '100.1.9.0', '100.1.11.0', '100.1.12.0', '0.0.0.0'],
+        'mask' : ['255.255.255.0', '255.255.255.0', '255.255.255.0', '255.255.255.0', '255.255.255.0', '255.255.255.0', '255.255.255.0', '255.255.255.0', '255.255.255.0', '255.255.255.255'],
+        'next_hop' : ['100.1.32.1', '100.1.32.1', '100.1.42.1', '100.1.42.1', '100.1.42.1', '100.1.51.1', '100.1.51.1', '100.1.50.1', '100.1.50.1', '100.1.50.1']
+     } 
+ };
+
+#
+
+pc1 sw1 ~ {
+    'link_ID' : '1',
+    'left_end' : {'if_id': 'eth01', 'mac': '00-D0-56-F2-B5-01', 'ip': '10.8.1.10', 'mask': '255.255.255.0', 'gateway': '10.8.1.1', 'dns': '8.8.8.8'},
+    'right_end' : {'if_id': 'eth01', 'mac': '00-D0-56-F2-B5-11'},
+    'capacity' : '100',
+    'latency' : '1'
+};
+
+pc2 sw1 ~ {
+    'link_ID' : '2',
+    'left_end' : {'if_id': 'eth01', 'mac': '00-D0-56-F2-B5-02', 'ip': '10.8.1.11', 'mask': '255.255.255.0', 'gateway': '10.8.1.1', 'dns': '8.8.8.8'},
+    'right_end' : {'if_id': 'eth01', 'mac': '00-D0-56-F2-B5-11'},
+    'capacity' : '100',
+    'latency' : '1'
+};
+
+pc3 sw1 ~ {
+    'link_ID' : '3',
+    'left_end' : {'if_id': 'eth01', 'mac': '00-D0-56-F2-B5-03', 'ip': '10.8.1.12', 'mask': '255.255.255.0', 'gateway': '10.8.1.1', 'dns': '8.8.8.8'},
+    'right_end' : {'if_id': 'eth01', 'mac': '00-D0-56-F2-B5-11'},
+    'capacity' : '100',
+    'latency' : '1'
+};
+
+sw1 r1 ~ {
+    'link_ID' : '4',
+    'left_end' : {'if_id': 'eth02', 'mac': '00-D0-56-F2-B5-12'},
+    'right_end' : {'if_id': 'eth01', 'mac': '01-D0-56-F2-B5-01', 'ip': '10.8.1.1', 'mask': '255.255.255.0', 'gateway': '0.0.0.0', 'dns': '8.8.8.8', 'nat': 'enabled', 'public_ip': '100.1.1.8/24'},
+    'capacity' : '100',
+    'latency' : '2'
+};
+
+pc4 sw2 ~ {
+    'link_ID' : '5',
+    'left_end' : {'if_id': 'eth01', 'mac': '00-D0-56-F2-B5-04', 'ip': '10.8.2.4', 'mask': '255.255.255.0', 'gateway': '10.8.2.1', 'dns': '8.8.8.8'},
+    'right_end' : {'if_id': 'eth01', 'mac': '00-D0-56-F2-B5-21'},
+    'capacity' : '100',
+    'latency' : '3'
+};
+
+pc5 sw2 ~ {
+    'link_ID' : '6',
+    'left_end' : {'if_id': 'eth01', 'mac': '00-D0-56-F2-B5-05', 'ip': '10.8.2.5', 'mask': '255.255.255.0', 'gateway': '10.8.2.1', 'dns': '8.8.8.8'},
+    'right_end' : {'if_id': 'eth01', 'mac': '00-D0-56-F2-B5-21'},
+    'capacity' : '100',
+    'latency' : '3'
+};
+
+pc6 sw2 ~ {
+    'link_ID' : '7',
+    'left_end' : {'if_id': 'eth01', 'mac': '00-D0-56-F2-B5-06', 'ip': '10.8.2.8', 'mask': '255.255.255.0', 'gateway': '10.8.2.1', 'dns': '8.8.8.8'},
+    'right_end' : {'if_id': 'eth01', 'mac': '00-D0-56-F2-B5-21'},
+    'capacity' : '100',
+    'latency' : '3'
+};
+
+sw2 r2 ~ {
+    'link_ID' : '8',
+    'left_end' : {'if_id': 'eth02', 'mac': '00-D0-56-F2-B5-22'},
+    'right_end' : {'if_id': 'eth01', 'mac': '02-D0-56-F2-B5-01', 'ip': '10.8.2.1', 'mask': '255.255.255.0', 'gateway': '0.0.0.0', 'dns': '8.8.8.8', 'nat': 'enabled', 'public_ip': '100.1.2.8/24'},
+    'capacity' : '100',
+    'latency' : '4'
+};
+
+pc7 sw3 ~ {
+    'link_ID' : '9',
+    'left_end' : {'if_id': 'eth01', 'mac': '00-D0-56-F2-B5-07', 'ip': '10.8.4.7', 'mask': '255.255.255.0', 'gateway': '10.8.4.1', 'dns': '8.8.8.8'},
+    'right_end' : {'if_id': 'eth01', 'mac': '00-D0-56-F2-B5-31'},
+    'capacity' : '100',
+    'latency' : '5'
+};
+
+pc8 sw3 ~ {
+    'link_ID' : '10',
+    'left_end' : {'if_id': 'eth01', 'mac': '00-D0-56-F2-B5-08', 'ip': '10.8.4.8', 'mask': '255.255.255.0', 'gateway': '10.8.4.1', 'dns': '8.8.8.8'},
+    'right_end' : {'if_id': 'eth01', 'mac': '00-D0-56-F2-B5-31'},
+    'capacity' : '100',
+    'latency' : '5'
+};
+
+sw3 r4 ~ {
+    'link_ID' : '11',
+    'left_end' : {'if_id': 'eth02', 'mac': '00-D0-56-F2-B5-32'},
+    'right_end' : {'if_id': 'eth01', 'mac': '04-D0-56-F2-B5-01', 'ip': '10.8.4.1', 'mask': '255.255.255.0', 'gateway': '0.0.0.0', 'dns': '8.8.8.8', 'nat': 'enabled', 'public_ip': '100.1.4.8/24'},
+    'capacity' : '100',
+    'latency' : '7'
+};
+
+pc9 sw4 ~ {
+    'link_ID' : '12',
+    'left_end' : {'if_id': 'eth01', 'mac': '00-D0-56-F2-B5-09', 'ip': '10.8.5.9', 'mask': '255.255.255.0', 'gateway': '10.8.5.1', 'dns': '8.8.8.8'},
+    'right_end' : {'if_id': 'eth01', 'mac': '00-D0-56-F2-B5-41'},
+    'capacity' : '100',
+    'latency' : '8'
+};
+
+pc10 sw4 ~ {
+    'link_ID' : '13',
+    'left_end' : {'if_id': 'eth01', 'mac': '00-D0-56-F2-B5-10', 'ip': '10.8.5.10', 'mask': '255.255.255.0', 'gateway': '10.8.5.1', 'dns': '8.8.8.8'},
+    'right_end' : {'if_id': 'eth01', 'mac': '00-D0-56-F2-B5-41'},
+    'capacity' : '100',
+    'latency' : '8'
+};
+
+sw4 r5 ~ {
+    'link_ID' : '14',
+    'left_end' : {'if_id': 'eth02', 'mac': '00-D0-56-F2-B5-42'},
+    'right_end' : {'if_id': 'eth01', 'mac': '05-D0-56-F2-B5-01', 'ip': '10.8.5.1', 'mask': '255.255.255.0', 'gateway': '0.0.0.0', 'dns': '8.8.8.8', 'nat': 'enabled', 'public_ip': '100.1.5.8/24'},
+    'capacity' : '100',
+    'latency' : '10'
+};
+
+pc11 sw5 ~ {
+    'link_ID' : '15',
+    'left_end' : {'if_id': 'eth01', 'mac': '00-D0-56-F2-B5-11', 'ip': '10.8.6.11', 'mask': '255.255.255.0', 'gateway': '10.8.6.1', 'dns': '8.8.8.8'},
+    'right_end' : {'if_id': 'eth01', 'mac': '00-D0-56-F2-B5-51'},
+    'capacity' : '100',
+    'latency' : '8'
+};
+
+pc12 sw5 ~ {
+    'link_ID' : '16',
+    'left_end' : {'if_id': 'eth01', 'mac': '00-D0-56-F2-B5-12', 'ip': '10.8.6.12', 'mask': '255.255.255.0', 'gateway': '10.8.6.1', 'dns': '8.8.8.8'},
+    'right_end' : {'if_id': 'eth01', 'mac': '00-D0-56-F2-B5-51'},
+    'capacity' : '100',
+    'latency' : '8'
+};
+
+sw5 r6 ~ {
+    'link_ID' : '17',
+    'left_end' : {'if_id': 'eth02', 'mac': '00:11:22:33:44:52'},
+    'right_end' : {'if_id': 'eth01', 'mac': '06-D0-56-F2-B5-01', 'ip': '10.8.6.1', 'mask': '255.255.255.0', 'gateway': '0.0.0.0', 'dns': '8.8.8.8', 'nat': 'enabled', 'public_ip': '100.1.6.8/24'},
+    'capacity' : '100',
+    'latency' : '10'
+};
+
+pc13 sw6 ~ {
+    'link_ID' : '18',
+    'left_end' : {'if_id': 'eth01', 'mac': '00-D0-56-F2-B5-13', 'ip': '10.8.8.13', 'mask': '255.255.255.0', 'gateway': '10.8.8.1', 'dns': '8.8.8.8'},
+    'right_end' : {'if_id': 'eth01', 'mac': '00-D0-56-F2-B5-61'},
+    'capacity' : '100',
+    'latency' : '11'
+};
+
+pc14 sw6 ~ {
+    'link_ID' : '19',
+    'left_end' : {'if_id': 'eth01', 'mac': '00-D0-56-F2-B5-14', 'ip': '10.8.8.14', 'mask': '255.255.255.0', 'gateway': '10.8.8.1', 'dns': '8.8.8.8'},
+    'right_end' : {'if_id': 'eth01', 'mac': '00-D0-56-F2-B5-61'},
+    'capacity' : '100',
+    'latency' : '11'
+};
+
+pc15 sw6 ~ {
+    'link_ID' : '20',
+    'left_end' : {'if_id': 'eth01', 'mac': '00-D0-56-F2-B5-15', 'ip': '10.8.8.15', 'mask': '255.255.255.0', 'gateway': '10.8.8.1', 'dns': '8.8.8.8'},
+    'right_end' : {'if_id': 'eth01', 'mac': '00-D0-56-F2-B5-61'},
+    'capacity' : '100',
+    'latency' : '11'
+};
+
+sw6 sw8 ~ {
+    'link_ID' : '21',
+    'left_end' : {'if_id': 'eth02', 'mac': '00:11:22:33:44:62'},
+    'right_end' : {'if_id': 'eth01', 'mac': '00-D0-56-F2-B5-81'},
+    'capacity' : '100',
+    'latency' : '11'
+};
+
+pc16 sw7 ~ {
+    'link_ID' : '22',
+    'left_end' : {'if_id': 'eth01', 'mac': '00-D0-56-F2-B5-16', 'ip': '10.8.8.16', 'mask': '255.255.255.0', 'gateway': '10.8.8.1', 'dns': '8.8.8.8'},
+    'right_end' : {'if_id': 'eth01', 'mac': '00-D0-56-F2-B5-71'},
+    'capacity' : '100',
+    'latency' : '11'
+};
+
+pc17 sw7 ~ {
+    'link_ID' : '23',
+    'left_end' : {'if_id': 'eth01', 'mac': '00-D0-56-F2-B5-17', 'ip': '10.8.8.17', 'mask': '255.255.255.0', 'gateway': '10.8.8.1', 'dns': '8.8.8.8'},
+    'right_end' : {'if_id': 'eth01', 'mac': '00-D0-56-F2-B5-71'},
+    'capacity' : '100',
+    'latency' : '11'
+};
+
+pc18 sw7 ~ {
+    'link_ID' : '24',
+    'left_end' : {'if_id': 'eth01', 'mac': '00-D0-56-F2-B5-18', 'ip': '10.8.8.18', 'mask': '255.255.255.0', 'gateway': '10.8.8.1', 'dns': '8.8.8.8'},
+    'right_end' : {'if_id': 'eth01', 'mac': '00-D0-56-F2-B5-71'},
+    'capacity' : '100',
+    'latency' : '11'
+};
+
+sw7 sw8 ~ {
+    'link_ID' : '25',
+    'left_end' : {'if_id': 'eth02', 'mac': '00-D0-56-F2-B5-72'},
+    'right_end' : {'if_id': 'eth01', 'mac': '00-D0-56-F2-B5-81'},
+    'capacity' : '100',
+    'latency' : '11'
+};
+
+sw8 r8 ~ {
+    'link_ID' : '26',
+    'left_end' : {'if_id': 'eth02', 'mac': '00:11:22:33:44:82'},
+    'right_end' : {'if_id': 'eth01', 'mac': '08-D0-56-F2-B5-01', 'ip': '10.8.8.1', 'mask': '255.255.255.0', 'gateway': '0.0.0.0', 'dns': '8.8.8.8', 'nat': 'enabled', 'public_ip': '100.1.8.8/24'},
+    'capacity' : '100',
+    'latency' : '11'
+};
+
+pc19 sw9 ~ {
+    'link_ID' : '27',
+    'left_end' : {'if_id': 'eth01', 'mac': '00-D0-56-F2-B5-19', 'ip': '10.8.9.19', 'mask': '255.255.255.0', 'gateway': '10.8.9.1', 'dns': '8.8.8.8'},
+    'right_end' : {'if_id': 'eth01', 'mac': '00-D0-56-F2-B5-91'},
+    'capacity' : '100',
+    'latency' : '11'
+};
+
+pc20 sw9 ~ {
+    'link_ID' : '28',
+    'left_end' : {'if_id': 'eth01', 'mac': '00-D0-56-F2-B5-20', 'ip': '10.8.9.20', 'mask': '255.255.255.0', 'gateway': '10.8.9.1', 'dns': '8.8.8.8'},
+    'right_end' : {'if_id': 'eth01', 'mac': '00-D0-56-F2-B5-91'},
+    'capacity' : '100',
+    'latency' : '11'
+};
+
+sw9 r9 ~ {
+    'link_ID' : '29',
+    'left_end' : {'if_id': 'eth02', 'mac': '00:11:22:33:44:92'},
+    'right_end' : {'if_id': 'eth01', 'mac': '09-D0-56-F2-B5-01', 'ip': '10.8.9.1', 'mask': '255.255.255.0', 'gateway': '0.0.0.0', 'dns': '8.8.8.8', 'nat': 'enabled', 'public_ip': '100.1.9.8/24'},
+    'capacity' : '100',
+    'latency' : '11'
+};
+
+sr1 sw10 ~ {
+    'link_ID' : '30',
+    'left_end' : {'if_id': 'eth01', 'mac': '01:11:22:33:44:01', 'ip': '100.1.11.10', 'mask': '255.255.255.0', 'gateway': '100.1.11.1', 'dns': '8.8.8.8'},
+    'right_end' : {'if_id': 'eth01', 'mac': '00-D0-56-F2-B5-11'},
+    'capacity' : '100',
+    'latency' : '11'
+};
+
+sw10 sw12 ~ {
+    'link_ID' : '31',
+    'left_end' : {'if_id': 'eth02', 'mac': '00:11:22:33:44:12'},
+    'right_end' : {'if_id': 'eth01', 'mac': '00-D0-56-F2-B5-31'},
+    'capacity' : '100',
+    'latency' : '11'
+};
+
+sr2 sw11 ~ {
+    'link_ID' : '32',
+    'left_end' : {'if_id': 'eth01', 'mac': '01:11:22:33:44:02', 'ip': '100.1.11.20', 'mask': '255.255.255.0', 'gateway': '100.1.11.1', 'dns': '8.8.8.8'},
+    'right_end' : {'if_id': 'eth01', 'mac': '00-D0-56-F2-B5-21'},
+    'capacity' : '100',
+    'latency' : '11'
+};
+
+sw11 sw12 ~ {
+    'link_ID' : '33',
+    'left_end' : {'if_id': 'eth02', 'mac': '00-D0-56-F2-B5-22'},
+    'right_end' : {'if_id': 'eth01', 'mac': '00-D0-56-F2-B5-31'},
+    'capacity' : '100',
+    'latency' : '11'
+};
+
+sw12 r11 ~ {
+    'link_ID' : '34',
+    'left_end' : {'if_id': 'eth02', 'mac': '00-D0-56-F2-B5-32'},
+    'right_end' : {'if_id': 'eth01', 'mac': '11-D0-56-F2-B5-01', 'ip': '100.1.11.1', 'mask': '255.255.255.0', 'gateway': '0.0.0.0', 'dns': '8.8.8.8', 'nat': 'disabled', 'public_ip': '0.0.0.0'},
+    'capacity' : '100',
+    'latency' : '11'
+};
+
+sr3 sw13 ~ {
+    'link_ID' : '35',
+    'left_end' : {'if_id': 'eth01', 'mac': '00-D0-56-F2-B5-03', 'ip': '100.1.12.10', 'mask': '255.255.255.0', 'gateway': '100.1.12.1', 'dns': '8.8.8.8'},
+    'right_end' : {'if_id': 'eth01', 'mac': '00-D0-56-F2-B5-31'},
+    'capacity' : '100',
+    'latency' : '11'
+};
+
+sw13 sw15 ~ {
+    'link_ID' : '36',
+    'left_end' : {'if_id': 'eth02', 'mac': '00-D0-56-F2-B5-32'},
+    'right_end' : {'if_id': 'eth01', 'mac': '00-D0-56-F2-B5-21'},
+    'capacity' : '100',
+    'latency' : '11'
+};
+
+sr4 sw14 ~ {
+    'link_ID' : '37',
+    'left_end' : {'if_id': 'eth01', 'mac': '00-D0-56-F2-B5-04', 'ip': '100.1.12.20', 'mask': '255.255.255.0', 'gateway': '100.1.12.1', 'dns': '8.8.8.8'},
+    'right_end' : {'if_id': 'eth01', 'mac': '00-D0-56-F2-B5-41'},
+    'capacity' : '100',
+    'latency' : '11'
+};
+
+sw14 sw15 ~ {
+    'link_ID' : '38',
+    'left_end' : {'if_id': 'eth02', 'mac': '00-D0-56-F2-B5-42'},
+    'right_end' : {'if_id': 'eth01', 'mac': '00-D0-56-F2-B5-21'},
+    'capacity' : '100',
+    'latency' : '11'
+};
+
+sw15 r12 ~ {
+    'link_ID' : '39',
+    'left_end' : {'if_id': 'eth02', 'mac': '00-D0-56-F2-B5-22'},
+    'right_end' : {'if_id': 'eth01', 'mac': '12-D0-56-F2-B5-01', 'ip': '100.1.12.1', 'mask': '255.255.255.0', 'gateway': '0.0.0.0', 'dns': '8.8.8.8', 'nat': 'disabled', 'public_ip': '0.0.0.0'},
+    'capacity' : '100',
+    'latency' : '11'
+};
+
+r1 r3 ~ {
+    'link_ID' : '40',
+    'left_end' : {'if_id': 'eth02', 'mac': '01-D0-56-F2-B5-02', 'ip': '100.1.1.8', 'mask': '255.255.255.0', 'gateway': '0.0.0.0', 'dns': '8.8.8.8', 'nat': 'disabled', 'public_ip': '0.0.0.0'},
+    'right_end' : {'if_id': 'eth01', 'mac': '03-D0-56-F2-B5-01', 'ip': '100.1.1.1', 'mask': '255.255.255.0', 'gateway': '0.0.0.0', 'dns': '8.8.8.8', 'nat': 'disabled', 'public_ip': '0.0.0.0'},
+    'capacity' : '100',
+    'latency' : '12'
+};
+
+r2 r3 ~ {
+    'link_ID' : '41',
+    'left_end' : {'if_id': 'eth02', 'mac': '02-D0-56-F2-B5-02', 'ip': '100.1.2.8', 'mask': '255.255.255.0', 'gateway': '0.0.0.0', 'dns': '8.8.8.8', 'nat': 'disabled', 'public_ip': '0.0.0.0'},
+    'right_end' : {'if_id': 'eth02', 'mac': '03-D0-56-F2-B5-02', 'ip': '100.1.2.1', 'mask': '255.255.255.0', 'gateway': '0.0.0.0', 'dns': '8.8.8.8', 'nat': 'disabled', 'public_ip': '0.0.0.0'},
+    'capacity' : '100',
+    'latency' : '13'
+};
+
+r4 r7 ~ {
+    'link_ID' : '42',
+    'left_end' : {'if_id': 'eth02', 'mac': '04-D0-56-F2-B5-02', 'ip': '100.1.4.8', 'mask': '255.255.255.0', 'gateway': '0.0.0.0', 'dns': '8.8.8.8', 'nat': 'disabled', 'public_ip': '0.0.0.0'},
+    'right_end' : {'if_id': 'eth01', 'mac': '07-D0-56-F2-B5-01', 'ip': '100.1.4.1', 'mask': '255.255.255.0', 'gateway': '0.0.0.0', 'dns': '8.8.8.8', 'nat': 'disabled', 'public_ip': '0.0.0.0'},
+    'capacity' : '100',
+    'latency' : '14'
+};
+
+r5 r7 ~ {
+    'link_ID' : '43',
+    'left_end' : {'if_id': 'eth02', 'mac': '05-D0-56-F2-B5-02', 'ip': '100.1.5.8', 'mask': '255.255.255.0', 'gateway': '0.0.0.0', 'dns': '8.8.8.8', 'nat': 'disabled', 'public_ip': '0.0.0.0'},
+    'right_end' : {'if_id': 'eth02', 'mac': '07-D0-56-F2-B5-02', 'ip': '100.1.5.1', 'mask': '255.255.255.0', 'gateway': '0.0.0.0', 'dns': '8.8.8.8', 'nat': 'disabled', 'public_ip': '0.0.0.0'},
+    'capacity' : '100',
+    'latency' : '15'
+};
+
+r6 r7 ~ {
+    'link_ID' : '44',
+    'left_end' : {'if_id': 'eth02', 'mac': '06-D0-56-F2-B5-02', 'ip': '100.1.6.8', 'mask': '255.255.255.0', 'gateway': '0.0.0.0', 'dns': '8.8.8.8', 'nat': 'disabled', 'public_ip': '0.0.0.0'},
+    'right_end' : {'if_id': 'eth03', 'mac': '07-D0-56-F2-B5-03', 'ip': '100.1.6.1', 'mask': '255.255.255.0', 'gateway': '0.0.0.0', 'dns': '8.8.8.8', 'nat': 'disabled', 'public_ip': '0.0.0.0'},
+    'capacity' : '100',
+    'latency' : '15'
+};
+
+r8 r10 ~ {
+    'link_ID' : '45',
+    'left_end' : {'if_id': 'eth02', 'mac': '08-D0-56-F2-B5-02', 'ip': '100.1.8.8', 'mask': '255.255.255.0', 'gateway': '0.0.0.0', 'dns': '8.8.8.8', 'nat': 'disabled', 'public_ip': '0.0.0.0'},
+    'right_end' : {'if_id': 'eth01', 'mac': '10-D0-56-F2-B5-01', 'ip': '100.1.8.1', 'mask': '255.255.255.0', 'gateway': '0.0.0.0', 'dns': '8.8.8.8', 'nat': 'disabled', 'public_ip': '0.0.0.0'},
+    'capacity' : '100',
+    'latency' : '17'
+};
+
+r9 r10 ~ {
+    'link_ID' : '46',
+    'left_end' : {'if_id': 'eth02', 'mac': '09-D0-56-F2-B5-02', 'ip': '100.1.9.8', 'mask': '255.255.255.0', 'gateway': '0.0.0.0', 'dns': '8.8.8.8', 'nat': 'disabled', 'public_ip': '0.0.0.0'},
+    'right_end' : {'if_id': 'eth02', 'mac': '10-D0-56-F2-B5-02', 'ip': '100.1.9.1', 'mask': '255.255.255.0', 'gateway': '0.0.0.0', 'dns': '8.8.8.8', 'nat': 'disabled', 'public_ip': '0.0.0.0'},
+    'capacity' : '100',
+    'latency' : '17'
+};
+
+r11 r13 ~ {
+    'link_ID' : '47',
+    'left_end' : {'if_id': 'eth02', 'mac': '11-D0-56-F2-B5-02', 'ip': '100.1.13.8', 'mask': '255.255.255.0', 'gateway': '0.0.0.0', 'dns': '8.8.8.8', 'nat': 'disabled', 'public_ip': '0.0.0.0'},
+    'right_end' : {'if_id': 'eth01', 'mac': '13-D0-56-F2-B5-01', 'ip': '100.1.13.1', 'mask': '255.255.255.0', 'gateway': '0.0.0.0', 'dns': '8.8.8.8', 'nat': 'disabled', 'public_ip': '0.0.0.0'},
+    'capacity' : '100',
+    'latency' : '17'
+};
+
+r12 r13 ~ {
+    'link_ID' : '48',
+    'left_end' : {'if_id': 'eth02', 'mac': '12-D0-56-F2-B5-02', 'ip': '100.1.14.8', 'mask': '255.255.255.0', 'gateway': '0.0.0.0', 'dns': '8.8.8.8', 'nat': 'disabled', 'public_ip': '0.0.0.0'},
+    'right_end' : {'if_id': 'eth02', 'mac': '13-D0-56-F2-B5-02', 'ip': '100.1.14.1', 'mask': '255.255.255.0', 'gateway': '0.0.0.0', 'dns': '8.8.8.8', 'nat': 'disabled', 'public_ip': '0.0.0.0'},
+    'capacity' : '100',
+    'latency' : '17'
+};
+
+r3 r14 ~ {
+    'link_ID' : '49',
+    'left_end' : {'if_id': 'eth03', 'mac': '02-D0-56-F2-B5-03', 'ip': '100.1.20.2', 'mask': '255.255.255.0', 'gateway': '0.0.0.0', 'dns': '8.8.8.8', 'nat': 'disabled', 'public_ip': '0.0.0.0'},
+    'right_end' : {'if_id': 'eth01', 'mac': '14-D0-56-F2-B5-01', 'ip': '100.1.20.1', 'mask': '255.255.255.0', 'gateway': '0.0.0.0', 'dns': '8.8.8.8', 'nat': 'disabled', 'public_ip': '0.0.0.0'},
+    'capacity' : '100',
+    'latency' : '17'
+};
+
+r7 r15 ~ {
+    'link_ID' : '50',
+    'left_end' : {'if_id': 'eth04', 'mac': '07-D0-56-F2-B5-04', 'ip': '100.1.21.8', 'mask': '255.255.255.0', 'gateway': '0.0.0.0', 'dns': '8.8.8.8', 'nat': 'disabled', 'public_ip': '0.0.0.0'},
+    'right_end' : {'if_id': 'eth01', 'mac': '15-D0-56-F2-B5-01', 'ip': '100.1.21.1', 'mask': '255.255.255.0', 'gateway': '0.0.0.0', 'dns': '8.8.8.8', 'nat': 'disabled', 'public_ip': '0.0.0.0'},
+    'capacity' : '100',
+    'latency' : '17'
+};
+
+r10 r17 ~ {
+    'link_ID' : '51',
+    'left_end' : {'if_id': 'eth03', 'mac': '10-D0-56-F2-B5-03', 'ip': '100.1.22.8', 'mask': '255.255.255.0', 'gateway': '0.0.0.0', 'dns': '8.8.8.8', 'nat': 'disabled', 'public_ip': '0.0.0.0'},
+    'right_end' : {'if_id': 'eth01', 'mac': '17-D0-56-F2-B5-01', 'ip': '100.1.22.1', 'mask': '255.255.255.0', 'gateway': '0.0.0.0', 'dns': '8.8.8.8', 'nat': 'disabled', 'public_ip': '0.0.0.0/24'},
+    'capacity' : '100',
+    'latency' : '17'
+};
+
+r13 r16 ~ {
+    'link_ID' : '52',
+    'left_end' : {'if_id': 'eth03', 'mac': '13-D0-56-F2-B5-03', 'ip': '100.1.23.2', 'mask': '255.255.255.0', 'gateway': '0.0.0.0', 'dns': '8.8.8.8', 'nat': 'disabled', 'public_ip': '0.0.0.0'},
+    'right_end' : {'if_id': 'eth01', 'mac': '16-D0-56-F2-B5-01', 'ip': '100.1.23.1', 'mask': '255.255.255.0', 'gateway': '0.0.0.0', 'dns': '8.8.8.8', 'nat': 'disabled', 'public_ip': '0.0.0.0'},
+    'capacity' : '100',
+    'latency' : '17'
+};
+
+r14 r16 ~ {
+    'link_ID' : '53',
+    'left_end' : {'if_id': 'eth02', 'mac': '14-D0-56-F2-B5-02', 'ip': '100.1.30.1', 'mask': '255.255.255.0', 'gateway': '0.0.0.0', 'dns': '8.8.8.8', 'nat': 'disabled', 'public_ip': '0.0.0.0'},
+    'right_end' : {'if_id': 'eth02', 'mac': '16-D0-56-F2-B5-02', 'ip': '100.1.30.2', 'mask': '255.255.255.0', 'gateway': '0.0.0.0', 'dns': '8.8.8.8', 'nat': 'disabled', 'public_ip': '0.0.0.0'},
+    'capacity' : '100',
+    'latency' : '17'
+};
+
+r14 r17 ~ {
+    'link_ID' : '54',
+    'left_end' : {'if_id': 'eth03', 'mac': '14-D0-56-F2-B5-03', 'ip': '100.1.31.1', 'mask': '255.255.255.0', 'gateway': '0.0.0.0', 'dns': '8.8.8.8', 'nat': 'disabled', 'public_ip': '0.0.0.0'},
+    'right_end' : {'if_id': 'eth02', 'mac': '17-D0-56-F2-B5-23', 'ip': '100.1.31.2', 'mask': '255.255.255.0', 'gateway': '0.0.0.0', 'dns': '8.8.8.8', 'nat': 'disabled', 'public_ip': '0.0.0.0'},
+    'capacity' : '100',
+    'latency' : '17'
+};
+
+r14 r18 ~ {
+    'link_ID' : '55',
+    'left_end' : {'if_id': 'eth04', 'mac': '14-D0-56-F2-B5-04', 'ip': '100.1.32.1', 'mask': '255.255.255.0', 'gateway': '0.0.0.0', 'dns': '8.8.8.8', 'nat': 'disabled', 'public_ip': '0.0.0.0'},
+    'right_end' : {'if_id': 'eth01', 'mac': '18-D0-56-F2-B5-01', 'ip': '100.1.32.2', 'mask': '255.255.255.0', 'gateway': '0.0.0.0', 'dns': '8.8.8.8', 'nat': 'disabled', 'public_ip': '0.0.0.0'},
+    'capacity' : '100',
+    'latency' : '17'
+};
+
+r15 r16 ~ {
+    'link_ID' : '56',
+    'left_end' : {'if_id': 'eth02', 'mac': '15-D0-56-F2-B5-02', 'ip': '100.1.40.1', 'mask': '255.255.255.0', 'gateway': '0.0.0.0', 'dns': '8.8.8.8', 'nat': 'disabled', 'public_ip': '0.0.0.0'},
+    'right_end' : {'if_id': 'eth03', 'mac': '16-D0-56-F2-B5-03', 'ip': '100.1.40.2', 'mask': '255.255.255.0', 'gateway': '0.0.0.0', 'dns': '8.8.8.8', 'nat': 'disabled', 'public_ip': '0.0.0.0'},
+    'capacity' : '100',
+    'latency' : '17'
+};
+
+r15 r17 ~ {
+    'link_ID' : '57',
+    'left_end' : {'if_id': 'eth03', 'mac': '15-D0-56-F2-B5-03', 'ip': '100.1.41.1', 'mask': '255.255.255.0', 'gateway': '0.0.0.0', 'dns': '8.8.8.8', 'nat': 'disabled', 'public_ip': '0.0.0.0'},
+    'right_end' : {'if_id': 'eth03', 'mac': '17-D0-56-F2-B5-03', 'ip': '100.1.41.2', 'mask': '255.255.255.0', 'gateway': '0.0.0.0', 'dns': '8.8.8.8', 'nat': 'disabled', 'public_ip': '0.0.0.0'},
+    'capacity' : '100',
+    'latency' : '17'
+};
+
+r15 r18 ~ {
+    'link_ID' : '58',
+    'left_end' : {'if_id': 'eth04', 'mac': '15-D0-56-F2-B5-04', 'ip': '100.1.42.1', 'mask': '255.255.255.0', 'gateway': '0.0.0.0', 'dns': '8.8.8.8', 'nat': 'disabled', 'public_ip': '0.0.0.0'},
+    'right_end' : {'if_id': 'eth02', 'mac': '18-D0-56-F2-B5-02', 'ip': '100.1.42.2', 'mask': '255.255.255.0', 'gateway': '0.0.0.0', 'dns': '8.8.8.8', 'nat': 'disabled', 'public_ip': '0.0.0.0'},
+    'capacity' : '100',
+    'latency' : '17'
+};
+
+r16 r18 ~ {
+    'link_ID' : '59',
+    'left_end' : {'if_id': 'eth04', 'mac': '16-D0-56-F2-B5-04', 'ip': '100.1.50.1', 'mask': '255.255.255.0', 'gateway': '0.0.0.0', 'dns': '8.8.8.8', 'nat': 'disabled', 'public_ip': '0.0.0.0'},
+    'right_end' : {'if_id': 'eth03', 'mac': '18-D0-56-F2-B5-03', 'ip': '100.1.50.2', 'mask': '255.255.255.0', 'gateway': '0.0.0.0', 'dns': '8.8.8.8', 'nat': 'disabled', 'public_ip': '0.0.0.0'},
+    'capacity' : '100',
+    'latency' : '17'
+};
+
+r17 r18 ~ {
+    'link_ID' : '60',
+    'left_end' : {'if_id': 'eth04', 'mac': '17-D0-56-F2-B5-04', 'ip': '100.1.51.1', 'mask': '255.255.255.0', 'gateway': '0.0.0.0', 'dns': '8.8.8.8', 'nat': 'disabled', 'public_ip': '0.0.0.0'},
+    'right_end' : {'if_id': 'eth04', 'mac': '18-D0-56-F2-B5-04', 'ip': '100.1.51.2', 'mask': '255.255.255.0', 'gateway': '0.0.0.0', 'dns': '8.8.8.8', 'nat': 'disabled', 'public_ip': '0.0.0.0'},
+    'capacity' : '100',
+    'latency' : '17'
+};
+
