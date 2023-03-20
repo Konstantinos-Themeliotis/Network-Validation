@@ -27,9 +27,9 @@ For the validation of the network, various validation operation are performed up
 
 ## Tools
 The project was developed using Python 3.8. These modules-libraries were used to develop it:
-- [NetworkX](https://networkx.org/)
-- [Pandas](https://pandas.pydata.org/)
-- netaddr
-
+- [NetworkX](https://networkx.org/) For the network representation
+- [Pandas](https://pandas.pydata.org/)  For the data
+- [pyvis](https://pyvis.readthedocs.io/en/latest/) For network visualization
+- [Networking config version 2 from netplan] for device configuration(https://netplan.io/)
 ## More
 For the detailed presentation of the Diploma Thesis and the network validation tool, view the pdf file located at docs.
