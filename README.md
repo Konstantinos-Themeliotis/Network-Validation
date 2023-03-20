@@ -32,4 +32,4 @@ The project was developed using Python 3.8. These modules-libraries were used to
 - [pyvis](https://pyvis.readthedocs.io/en/latest/) For the network visualization.
 - [Networking config version 2 from netplan](https://netplan.io/) For device configuration.
 ## More
-For the detailed presentation of the Diploma Thesis and the network validation tool, view the pdf file located at docs.
+For the detailed presentation of the Diploma Thesis and the network validation tool, view the pdf file located at [docs](https://github.com/Konstantinos-Themeliotis/Network-Validation/tree/main/docs).
